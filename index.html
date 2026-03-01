@@ -1264,8 +1264,9 @@ input::placeholder,textarea::placeholder{color:var(--text3);}
       <div class="fg"><label>Ruangan Utama</label><input id="k_ruangan" placeholder="Contoh: Ruang 12, Lab TKJ 1..."></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modalKelas')">Batal</button>
-      <button class="btn btn-sky" onclick="saveKelas()">💾 Simpan Kelas</button>
+      <button class="btn btn-ghost" onclick="closeModal('modalKelas')">Tutup</button>
+      <button class="btn btn-ghost" onclick="saveKelasAndClose()">💾 Simpan & Tutup</button>
+      <button class="btn btn-sky" onclick="saveKelas()">➕ Simpan & Tambah Lagi</button>
     </div>
   </div>
 </div>
@@ -1584,7 +1585,7 @@ function openModal(id) {
   m.classList.add('open');
   if (id==='modalJurusan') buildColorPicker('cpJurusan','cpJurusan');
   if (id==='modalMapel') { buildColorPicker('cpMapel','cpMapel'); fillMapelJurusan(); }
-  if (id==='modalKelas') { fillKelasJurusan(); fillKelasWali(); updateKelasName(); }
+  if (id==='modalKelas') { fillKelasJurusan(); fillKelasWali(); updateKelasName(); document.getElementById('k_ruangan').value=''; }
   if (id==='modalGuru') fillGuruMapelCheck();
   if (id==='modalAssign') { fillAssignMapel(); fillAssignGuru(); }
 }
@@ -1647,7 +1648,7 @@ function saveJurusan() {
   const nama = document.getElementById('j_nama').value.trim();
   if (!kode||!nama) { toast('Isi kode dan nama jurusan!','','error'); return; }
   DB.jurusan.push({
-    id: 'jur_'+Date.now(),
+    id: 'jur_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
     kode, nama,
     namaLengkap: document.getElementById('j_namaLengkap').value,
     bidang: document.getElementById('j_bidang').value,
@@ -1713,20 +1714,41 @@ function saveKelas() {
   const jId = document.getElementById('k_jurusan').value;
   const j = DB.jurusan.find(x=>x.id===jId);
   const nama = document.getElementById('k_namaKelas').value.trim();
-  if (!nama||!jId) { toast('Pilih jurusan!','','error'); return; }
-  DB.kelas.push({
-    id: 'kls_'+Date.now(),
+  if (!nama) { toast('Nama kelas tidak boleh kosong!','','error'); return; }
+  if (!jId) { toast('Pilih jurusan terlebih dahulu!','','error'); return; }
+  // Cegah duplikat nama kelas
+  if (DB.kelas.find(k=>k.nama.toLowerCase()===nama.toLowerCase())) {
+    toast(`Kelas "${nama}" sudah ada!`, 'Gunakan nama yang berbeda', 'warning'); return;
+  }
+  const newKelas = {
+    id: 'kls_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
     nama,
     tingkat: document.getElementById('k_tingkat').value,
     jurusanId: jId,
-    jurusanKode: j?j.kode:'',
+    jurusanKode: j ? j.kode : '',
     rombel: document.getElementById('k_rombel').value,
     waliId: document.getElementById('k_wali').value,
     ruangan: document.getElementById('k_ruangan').value
-  });
-  saveDB(); closeModal('modalKelas'); renderKelas();
-  toast(`Kelas ${nama} ditambahkan!`);
+  };
+  DB.kelas.push(newKelas);
+  if (!DB.jadwal[newKelas.id]) DB.jadwal[newKelas.id] = {};
+  if (!DB.assignMapel[newKelas.id]) DB.assignMapel[newKelas.id] = [];
+  saveDB();
+  // Reset form untuk input kelas berikutnya
+  document.getElementById('k_namaKelas').value = '';
+  document.getElementById('k_ruangan').value = '';
+  // Biarkan modal tetap terbuka supaya bisa tambah kelas lagi
+  renderKelas();
+  refreshTTKelasSelect();
+  refreshMegaFilters();
+  toast(`✅ Kelas ${nama} berhasil ditambahkan!`, `Total: ${DB.kelas.length} kelas`);
 }
+function saveKelasAndClose() {
+  const nama = document.getElementById('k_namaKelas').value.trim();
+  if (nama) saveKelas();
+  closeModal('modalKelas');
+}
+
 function generateKelas() {
   if (!DB.jurusan.length) { toast('Tambah jurusan dulu!','','error'); return; }
   const tingkats = ['X','XI','XII'];
@@ -1736,17 +1758,20 @@ function generateKelas() {
       for (let r=1;r<=j.rombel;r++) {
         const nama = `${t} ${j.kode} ${r}`;
         if (!DB.kelas.find(k=>k.nama===nama)) {
+          const id = 'kls_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
           DB.kelas.push({
-            id:'kls_'+Date.now()+Math.random().toString(36).slice(2),
-            nama, tingkat:t, jurusanId:j.id, jurusanKode:j.kode,
+            id, nama, tingkat:t, jurusanId:j.id, jurusanKode:j.kode,
             rombel:r.toString(), waliId:'', ruangan:''
           });
+          if (!DB.jadwal[id]) DB.jadwal[id] = {};
+          if (!DB.assignMapel[id]) DB.assignMapel[id] = [];
           added++;
         }
       }
     });
   });
-  saveDB(); renderKelas(); toast(`${added} kelas berhasil di-generate!`, `Total: ${DB.kelas.length} kelas`);
+  saveDB(); renderKelas(); refreshTTKelasSelect(); refreshMegaFilters();
+  toast(`${added} kelas berhasil di-generate!`, `Total: ${DB.kelas.length} kelas`);
 }
 function renderKelas() {
   const q = document.getElementById('searchKelas').value.toLowerCase();
@@ -1781,11 +1806,12 @@ function renderKelas() {
   }).join('');
 }
 function delKelas(id) {
-  if (!confirm('Hapus kelas ini?')) return;
+  if (!confirm('Hapus kelas ini? Semua jadwal kelas akan ikut terhapus.')) return;
   DB.kelas = DB.kelas.filter(k=>k.id!==id);
   delete DB.assignMapel[id];
   delete DB.jadwal[id];
-  saveDB(); renderKelas();
+  saveDB(); renderKelas(); refreshTTKelasSelect(); refreshMegaFilters();
+  toast('Kelas dihapus');
 }
 
 // ================ STEP 4: MAPEL ================
@@ -1827,7 +1853,7 @@ function saveMapel() {
   const nama = document.getElementById('m_nama').value.trim();
   if (!kode||!nama) { toast('Isi kode dan nama mapel!','','error'); return; }
   DB.mapel.push({
-    id:'mp_'+Date.now(),kode,nama,
+    id:'mp_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),kode,nama,
     kelompok:document.getElementById('m_kelompok').value,
     jurusanId:document.getElementById('m_jurusan').value,
     kkm:parseInt(document.getElementById('m_kkm').value)||75,
@@ -1889,7 +1915,7 @@ function saveGuru() {
   if (!nama) { toast('Nama guru wajib diisi!','','error'); return; }
   const mapelIds = [...document.querySelectorAll('input[name="guruMapel"]:checked')].map(x=>x.value);
   DB.guru.push({
-    id:'gru_'+Date.now(),
+    id:'gru_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
     nip:document.getElementById('g_nip').value,
     nama,
     status:document.getElementById('g_status').value,
