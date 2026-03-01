@@ -479,11 +479,205 @@ input::placeholder,textarea::placeholder{color:var(--text3);}
 
 /* PRINT */
 @media print{
-  .topbar,.toast-container,.modal-overlay{display:none!important;}
+  .topbar,.toast-container,.modal-overlay,.tt-mode-bar,.paving-sidebar{display:none!important;}
   .page{display:block!important;}
   body{background:white;color:black;}
   .tt-grid th,.tt-grid td{background:#f0f0f0!important;}
   .slot-block{border:1px solid #ccc!important;}
+  .mega-grid-wrap{overflow:visible!important;}
+}
+
+/* ===== PAVING BLOCK SYSTEM ===== */
+.tt-mode-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:16px;flex-wrap:wrap;
+}
+.mode-toggle{display:flex;gap:4px;background:var(--panel3);border-radius:10px;padding:3px;}
+.mode-btn{
+  padding:7px 16px;border-radius:8px;border:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;
+  color:var(--text3);background:transparent;transition:all 0.2s;
+  display:flex;align-items:center;gap:5px;
+}
+.mode-btn.active{background:var(--sky);color:var(--bg);box-shadow:0 2px 8px rgba(56,189,248,0.3);}
+
+/* MEGA GRID (all classes at once) */
+.mega-layout{display:flex;gap:16px;align-items:flex-start;}
+.mega-grid-wrap{flex:1;overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+.mega-table{
+  border-collapse:separate;border-spacing:2px;
+  min-width:100%;padding:8px;
+  background:var(--panel);font-size:11px;
+}
+.mega-table .mh-empty{
+  background:var(--panel2);border-radius:6px;padding:8px;
+  font-size:10px;color:var(--text3);font-weight:700;letter-spacing:1px;
+  white-space:nowrap;text-align:center;min-width:80px;
+}
+.mega-table .mh-class{
+  background:var(--panel2);border-radius:6px;padding:6px 8px;
+  font-size:10px;font-weight:800;text-align:center;
+  white-space:nowrap;min-width:88px;
+  position:sticky;top:0;z-index:5;
+}
+.mega-table .mh-day-group{
+  text-align:center;padding:4px 6px;
+  font-size:9px;font-weight:800;color:var(--text3);
+  letter-spacing:1.5px;text-transform:uppercase;
+}
+.mega-table .mt-time{
+  background:var(--panel2);border-radius:6px;
+  padding:6px 8px;text-align:center;white-space:nowrap;
+  position:sticky;left:0;z-index:3;
+}
+.mega-table .mt-slot{
+  width:88px;min-width:88px;height:52px;
+  background:var(--panel2);border-radius:6px;
+  position:relative;cursor:pointer;
+  transition:background 0.15s;vertical-align:middle;
+}
+.mega-table .mt-slot:hover:not(.mt-filled){background:rgba(56,189,248,0.08);}
+.mega-table .mt-slot.mt-filled{cursor:default;}
+.mega-table .mt-slot.mt-drop-hover{background:rgba(56,189,248,0.15)!important;outline:2px dashed var(--sky);}
+.mega-table .mt-slot.mt-conflict{background:rgba(244,63,94,0.08);}
+.mega-table .mt-slot.mt-istirahat{
+  background:rgba(245,158,11,0.05);cursor:default;
+}
+.mt-istirahat-lbl{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--amber);font-weight:700;letter-spacing:1px;
+}
+
+/* PAVING BRICK INSIDE SLOT */
+.paving-brick{
+  position:absolute;inset:2px;border-radius:5px;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:4px 5px;overflow:hidden;cursor:grab;
+  border-left:3px solid rgba(255,255,255,0.3);
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.paving-brick:active{cursor:grabbing;}
+.paving-brick::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:35%;
+  background:rgba(255,255,255,0.12);pointer-events:none;
+  border-radius:5px 5px 0 0;
+}
+.paving-brick:hover{transform:scale(1.04);box-shadow:0 4px 16px rgba(0,0,0,0.5);z-index:10;}
+.paving-brick.pb-conflict{
+  outline:2px solid var(--rose);
+  animation:pbconflict 0.8s ease-in-out infinite;
+}
+@keyframes pbconflict{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,0.4);}50%{box-shadow:0 0 0 5px rgba(244,63,94,0);}}
+.pb-mapel{font-size:9px;font-weight:800;color:rgba(255,255,255,0.95);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:1;}
+.pb-guru{font-size:8px;color:rgba(255,255,255,0.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono',monospace;position:relative;z-index:1;}
+.pb-del{
+  position:absolute;top:2px;right:2px;width:14px;height:14px;
+  border-radius:50%;background:rgba(0,0,0,0.5);border:none;
+  color:white;font-size:8px;cursor:pointer;
+  align-items:center;justify-content:center;z-index:20;display:none;
+}
+.paving-brick:hover .pb-del{display:flex;}
+.pb-conf-icon{position:absolute;top:2px;left:3px;font-size:9px;z-index:15;}
+
+/* PAVING SIDEBAR (pool) */
+.paving-sidebar{
+  width:230px;min-width:230px;
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius);padding:0;
+  display:flex;flex-direction:column;max-height:calc(100vh - 180px);
+  position:sticky;top:20px;
+}
+.psb-head{
+  padding:14px 16px 10px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.psb-title{font-size:11px;font-weight:800;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.psb-body{overflow-y:auto;padding:12px 14px;flex:1;}
+
+/* POOL MAPEL ITEM */
+.pool-mapel{
+  margin-bottom:12px;
+}
+.pool-mapel-head{
+  display:flex;align-items:center;gap:8px;margin-bottom:5px;
+  font-size:12px;font-weight:700;
+}
+.pool-bricks{display:flex;flex-wrap:wrap;gap:4px;}
+.pool-brick{
+  width:36px;height:36px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:#000;
+  cursor:grab;position:relative;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.2);
+  transition:transform 0.1s,box-shadow 0.1s;
+  flex-shrink:0;text-align:center;line-height:1.1;padding:2px;
+}
+.pool-brick::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:40%;
+  background:rgba(255,255,255,0.25);border-radius:4px 4px 0 0;pointer-events:none;
+}
+.pool-brick:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.5);}
+.pool-brick:active{cursor:grabbing;transform:scale(0.95);}
+.pool-brick.pb-used{opacity:0.3;cursor:not-allowed;transform:none!important;}
+.pool-brick .pb-no{font-size:7px;opacity:0.7;display:block;}
+.psb-kelas-sel{margin-bottom:10px;}
+
+/* CLASS FILTER PILLS */
+.class-pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;}
+.class-pill{
+  padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;
+  border:1px solid var(--border);background:transparent;color:var(--text3);
+  cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.15s;
+}
+.class-pill.active{background:var(--sky);color:var(--bg);border-color:var(--sky);}
+
+/* AUTO MODE */
+.auto-panel{
+  background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(56,189,248,0.05));
+  border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius);
+  padding:20px;margin-bottom:16px;
+}
+.auto-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
+.auto-opt{
+  padding:10px 12px;border-radius:10px;border:1px solid var(--border);
+  background:var(--panel2);cursor:pointer;
+  transition:all 0.15s;font-size:12px;
+}
+.auto-opt:hover,.auto-opt.selected{border-color:var(--sky);background:rgba(56,189,248,0.07);}
+.auto-opt h4{font-size:12px;font-weight:800;margin-bottom:3px;color:var(--text);}
+.auto-opt p{font-size:10px;color:var(--text3);}
+
+/* CONFLICT BADGE */
+.conflict-counter{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  background:rgba(244,63,94,0.12);color:var(--rose);border:1px solid rgba(244,63,94,0.2);
+}
+.conflict-counter.ok{background:rgba(16,185,129,0.12);color:var(--emerald);border-color:rgba(16,185,129,0.2);}
+
+/* DRAG GHOST */
+.drag-ghost{
+  position:fixed;pointer-events:none;z-index:9999;
+  border-radius:6px;padding:4px 8px;
+  font-size:10px;font-weight:800;color:#fff;
+  opacity:0.9;transform:rotate(5deg);
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  display:none;
+}
+
+/* PRINT TIMETABLE */
+.print-only{display:none;}
+@media print{
+  .print-only{display:block!important;}
+  .no-print{display:none!important;}
+  .page-break{page-break-before:always;}
+  .print-header{text-align:center;margin-bottom:16px;font-family:Arial;}
+  .print-table{width:100%;border-collapse:collapse;font-size:9px;}
+  .print-table th,.print-table td{border:1px solid #999;padding:3px 5px;}
+  .print-table th{background:#ddd;font-weight:bold;}
+  .print-brick{border-radius:2px;padding:1px 3px;font-weight:700;display:inline-block;}
 }
 </style>
 </head>
@@ -506,6 +700,7 @@ input::placeholder,textarea::placeholder{color:var(--text3);}
     <button class="nav-tab active" onclick="goPage('dashboard')" id="tab-dashboard">🏠 Dashboard</button>
     <button class="nav-tab" onclick="goPage('setup')" id="tab-setup">⚙️ Setup Data</button>
     <button class="nav-tab" onclick="goPage('jadwal')" id="tab-jadwal">📅 Buat Jadwal</button>
+    <button class="nav-tab" onclick="goPage('mega')" id="tab-mega">🧱 Mega Grid</button>
     <button class="nav-tab" onclick="goPage('rekap')" id="tab-rekap">📊 Rekap</button>
   </div>
   <div class="topbar-actions">
@@ -832,30 +1027,136 @@ input::placeholder,textarea::placeholder{color:var(--text3);}
     <div class="section-title">
       <div class="accent-line"></div>
       <h2>Buat & Kelola Jadwal</h2>
-      <p>Timetable interaktif per kelas</p>
+      <p>Timetable interaktif per kelas — klik slot atau drag paving block</p>
     </div>
+    <button class="btn btn-ghost btn-sm" onclick="goPage('mega')">🧱 Buka Mega Grid →</button>
   </div>
-  <div class="tt-controls">
-    <div class="fg" style="width:220px;"><label>Pilih Kelas</label>
+
+  <!-- MODE BAR -->
+  <div class="tt-mode-bar">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeManualBtn" onclick="setJadwalMode('manual')">✋ Manual</button>
+      <button class="mode-btn" id="modeAutoBtn" onclick="setJadwalMode('auto')">⚡ Otomatis</button>
+    </div>
+    <div class="fg" style="width:200px;margin:0;">
       <select class="tt-select" id="ttKelas" onchange="renderTimetable()">
         <option value="">-- Pilih Kelas --</option>
       </select>
     </div>
-    <div style="margin-top:18px;display:flex;gap:8px;">
-      <button class="btn btn-ghost btn-sm" onclick="clearTimetableKelas()">🗑 Hapus Jadwal Kelas Ini</button>
-      <button class="btn btn-success btn-sm" onclick="autoFillJadwal()">⚡ Auto-Fill</button>
-      <button class="btn btn-amber btn-sm" onclick="checkKonflik()">⚠ Cek Konflik</button>
-      <button class="btn btn-ghost btn-sm" onclick="printTimetable()">🖨 Print</button>
-    </div>
-    <div id="ttInfo" style="margin-top:18px;"></div>
+    <button class="btn btn-ghost btn-sm" onclick="clearTimetableKelas()">🗑 Hapus</button>
+    <button class="btn btn-amber btn-sm" onclick="checkKonflik()">⚠ Cek Konflik</button>
+    <button class="btn btn-ghost btn-sm" onclick="openPrintModal()">🖨 Cetak</button>
+    <div id="ttInfo" style="margin-left:auto;"></div>
   </div>
-  <!-- PROGRESS BAR JADWAL -->
+
+  <!-- AUTO MODE PANEL -->
+  <div id="autoPanelJadwal" style="display:none;">
+    <div class="auto-panel">
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px;">⚡ Mode Otomatis — Generate Jadwal</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">Sistem akan mengisi jadwal secara otomatis berdasarkan assign mapel, guru, dan slot waktu yang tersedia.</div>
+      <div class="auto-options" id="autoOptions">
+        <div class="auto-opt selected" data-mode="smart" onclick="selectAutoMode(this)">
+          <h4>🧠 Smart Fill</h4>
+          <p>Distribusi merata, hindari bentrok guru, prioritas mapel wajib</p>
+        </div>
+        <div class="auto-opt" data-mode="balanced" onclick="selectAutoMode(this)">
+          <h4>⚖️ Balanced</h4>
+          <p>Seimbangkan beban hari & distribusi mapel antar hari</p>
+        </div>
+        <div class="auto-opt" data-mode="morning" onclick="selectAutoMode(this)">
+          <h4>🌅 Morning First</h4>
+          <p>Isi jam pagi dahulu, produktif di jam pertama</p>
+        </div>
+        <div class="auto-opt" data-mode="fill" onclick="selectAutoMode(this)">
+          <h4>🔄 Full Fill</h4>
+          <p>Isi semua slot yang tersedia sampai penuh</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="autoKeepExisting" style="width:auto;accent-color:var(--sky);"> Pertahankan jadwal yang sudah ada
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;">
+          <input type="checkbox" id="autoAllKelas" style="width:auto;accent-color:var(--indigo);"> Generate semua kelas sekaligus
+        </label>
+        <button class="btn btn-indigo" onclick="runAutoFill()">⚡ Generate Sekarang</button>
+        <button class="btn btn-ghost btn-sm" onclick="autoFillAllKelas()">🏭 Generate Semua Kelas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
   <div id="ttProgress" style="margin-bottom:16px;"></div>
   <!-- TIMETABLE -->
   <div class="tt-wrap" id="ttContainer">
     <div style="padding:60px;text-align:center;color:var(--text3);">
       <div style="font-size:48px;margin-bottom:12px;">📅</div>
       <p>Pilih kelas terlebih dahulu untuk melihat timetable</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============== MEGA GRID ============== -->
+<div class="page" id="page-mega">
+  <div class="section-header">
+    <div class="section-title">
+      <div class="accent-line"></div>
+      <h2>🧱 Mega Paving Block Grid</h2>
+      <p>Papan jadwal seluruh kelas — drag &amp; drop paving block, tabrakan langsung terlihat</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <div id="megaConflictBadge" class="conflict-counter ok">✅ 0 Konflik</div>
+      <button class="btn btn-success btn-sm" onclick="autoFillAllKelas()">⚡ Auto Semua Kelas</button>
+      <button class="btn btn-ghost btn-sm" onclick="openPrintModal()">🖨 Cetak</button>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+    <span style="font-size:11px;color:var(--text3);font-weight:700;">FILTER:</span>
+    <select id="megaFilterKelas" class="tt-select" style="width:160px;padding:6px 10px;font-size:12px;" onchange="renderMegaGrid()">
+      <option value="">Semua Kelas</option>
+    </select>
+    <select id="megaFilterGuru" class="tt-select" style="width:160px;padding:6px 10px;font-size:12px;" onchange="renderMegaGrid()">
+      <option value="">Semua Guru</option>
+    </select>
+    <select id="megaFilterMapel" class="tt-select" style="width:160px;padding:6px 10px;font-size:12px;" onchange="renderMegaGrid()">
+      <option value="">Semua Mapel</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+      <input type="checkbox" id="megaShowConflictOnly" style="width:auto;accent-color:var(--rose);" onchange="renderMegaGrid()"> Tampilkan Konflik Saja
+    </label>
+    <button class="btn btn-ghost btn-sm" onclick="clearMegaFilters()">✕ Reset Filter</button>
+  </div>
+
+  <!-- MEGA LAYOUT: sidebar pool + main grid -->
+  <div class="mega-layout">
+    <!-- PAVING POOL SIDEBAR -->
+    <div class="paving-sidebar">
+      <div class="psb-head">
+        <div class="psb-title">🧱 Paving Pool</div>
+        <select id="poolKelasSelect" class="form-control psb-kelas-sel" style="font-size:12px;padding:6px 10px;" onchange="renderPavingPool()">
+          <option value="">-- Pilih Kelas --</option>
+        </select>
+        <select id="poolGuruSelect" class="form-control" style="font-size:12px;padding:6px 10px;margin-top:6px;" onchange="renderPavingPool()">
+          <option value="">-- Guru (opsional) --</option>
+        </select>
+      </div>
+      <div class="psb-body" id="pavingPoolBody">
+        <div style="text-align:center;padding:24px;color:var(--text3);font-size:12px;">
+          Pilih kelas untuk melihat brick yang tersedia
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN MEGA TABLE -->
+    <div class="mega-grid-wrap">
+      <div id="megaGridContainer">
+        <div style="padding:60px;text-align:center;color:var(--text3);">
+          <div style="font-size:48px;margin-bottom:12px;">🧱</div>
+          <p>Tambah kelas & assign mapel di Setup, lalu jadwal akan muncul di sini</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1171,6 +1472,41 @@ input::placeholder,textarea::placeholder{color:var(--text3);}
   </div>
 </div>
 
+<!-- Modal Print -->
+<div class="overlay" id="modalPrint">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🖨️ Cetak Jadwal</h3>
+      <button class="modal-close" onclick="closeModal('modalPrint')">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Cetak Per</label>
+        <select id="printType" class="form-control" onchange="onPrintTypeChange()">
+          <option value="kelas">Per Kelas</option>
+          <option value="guru">Per Guru</option>
+          <option value="mapel">Per Mapel</option>
+          <option value="all">Semua Kelas (satu dokumen)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" id="printSelectRow">
+      <div class="fg"><label>Pilih</label>
+        <select id="printSelect" class="form-control"></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalPrint')">Batal</button>
+      <button class="btn btn-sky" onclick="doPrint()">🖨 Cetak / Simpan PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- Drag Ghost -->
+<div class="drag-ghost" id="dragGhost"></div>
+
+<!-- Print Area (hidden, shown only on print) -->
+<div id="printArea" class="print-only"></div>
+
 <!-- TOAST -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -1235,9 +1571,11 @@ function goPage(p) {
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  document.getElementById('tab-'+p).classList.add('active');
+  const tab = document.getElementById('tab-'+p);
+  if (tab) tab.classList.add('active');
   if (p==='dashboard') renderDashboard();
   if (p==='jadwal') refreshTTKelasSelect();
+  if (p==='mega') { refreshMegaFilters(); renderMegaGrid(); renderPavingPool(); }
   if (p==='rekap') renderRekap();
 }
 
@@ -1789,6 +2127,7 @@ function refreshTTKelasSelect() {
     s.appendChild(opt);
   });
   if (cur) s.value=cur;
+  refreshMegaFilters();
 }
 
 function getHariCount() { return parseInt(DB.sekolah.hari)||6; }
@@ -1857,7 +2196,10 @@ function renderTimetable() {
           const g = DB.guru.find(x=>x.id===slot.guruId);
           const col = m?m.color:'#64748b';
           html += `<td class="filled">
-            <div class="slot-block" style="background:${col}33;border-left-color:${col};" onclick="editSlot('${kId}','${key}','${hari}',${idx})">
+            <div class="slot-block" style="background:${col}33;border-left-color:${col};"
+              draggable="true"
+              ondragstart="onPavingDragStart(event,'slot','${kId}','${key}','${slot.mapelId}','${slot.guruId||''}')"
+              onclick="editSlot('${kId}','${key}','${hari}',${idx})">
               <div class="slot-name">${m?m.kode:'?'} ${m?m.nama:''}</div>
               <div class="slot-teacher">👤 ${g?g.nama:'—'}</div>
               <div class="slot-room">🏠 ${slot.room||'—'}</div>
@@ -1865,7 +2207,11 @@ function renderTimetable() {
             </div>
           </td>`;
         } else {
-          html += `<td data-kelas="${kId}" data-key="${key}" data-hari="${hari}" data-jam="${idx}" onclick="openAddSlot('${kId}','${key}','${hari}',${idx})">
+          html += `<td data-kelas="${kId}" data-key="${key}" data-hari="${hari}" data-jam="${idx}"
+            ondragover="event.preventDefault();this.style.background='rgba(56,189,248,0.1)'"
+            ondragleave="this.style.background=''"
+            ondrop="onTtSlotDrop(event,'${kId}','${key}','${hari}',${idx})"
+            onclick="onTtSlotClick('${kId}','${key}','${hari}',${idx})">
             <div class="add-hint">+</div>
           </td>`;
         }
@@ -1967,6 +2313,28 @@ function editSlot(kId,key,hari,jamIdx) {
   }
 }
 
+function onTtSlotDrop(e, kId, key, hari, jamIdx) {
+  e.preventDefault();
+  e.currentTarget.style.background='';
+  if (!dragPayload) { openAddSlot(kId,key,hari,jamIdx); return; }
+  if (dragPayload.type==='pool') {
+    // Override kelasId with current class
+    const orig = dragPayload;
+    dragPayload = {...orig, fromKelasId: kId};
+    placeFromPool(kId, key, hari, jamIdx);
+  } else {
+    onMegaDrop(e, kId, key, hari, jamIdx);
+  }
+}
+
+function onTtSlotClick(kId, key, hari, jamIdx) {
+  if (dragPayload && dragPayload.type==='pool') {
+    placeFromPool(kId, key, hari, jamIdx);
+    return;
+  }
+  openAddSlot(kId, key, hari, jamIdx);
+}
+
 function delSlot(kId,key,e) {
   e.stopPropagation();
   if (!DB.jadwal[kId]) return;
@@ -1983,33 +2351,143 @@ function clearTimetableKelas() {
   toast('Jadwal kelas dihapus!');
 }
 
-function autoFillJadwal() {
+// ================ JADWAL MODE ================
+let jadwalMode = 'manual';
+let selectedAutoMode = 'smart';
+
+function setJadwalMode(mode) {
+  jadwalMode = mode;
+  document.getElementById('modeManualBtn').classList.toggle('active', mode==='manual');
+  document.getElementById('modeAutoBtn').classList.toggle('active', mode==='auto');
+  document.getElementById('autoPanelJadwal').style.display = mode==='auto' ? 'block' : 'none';
+}
+
+function selectAutoMode(el) {
+  document.querySelectorAll('.auto-opt').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAutoMode = el.dataset.mode;
+}
+
+function runAutoFill() {
   const kId = document.getElementById('ttKelas').value;
   if (!kId) { toast('Pilih kelas dulu!','','error'); return; }
+  const keepExisting = document.getElementById('autoKeepExisting').checked;
+  autoFillKelas(kId, selectedAutoMode, keepExisting);
+  renderTimetable();
+}
+
+function autoFillAllKelas() {
+  if (!DB.kelas.length) { toast('Belum ada kelas!','','error'); return; }
+  let total = 0;
+  DB.kelas.forEach(k => {
+    total += autoFillKelas(k.id, selectedAutoMode || 'smart', false);
+  });
+  toast(`Auto-fill selesai!`, `${total} slot terisi di semua kelas`);
+  renderTimetable();
+  renderMegaGrid();
+}
+
+function autoFillKelas(kId, mode, keepExisting) {
   const assigns = DB.assignMapel[kId]||[];
-  if (!assigns.length) { toast('Belum ada mapel di-assign!','','warning'); return; }
-  if (!DB.jadwalKId) DB.jadwal[kId]={};
+  if (!assigns.length) return 0;
+  if (!DB.jadwal[kId]) DB.jadwal[kId] = {};
+  if (!keepExisting) DB.jadwal[kId] = {};
+
   const haris = getHaris();
   const jpOnly = getJPOnly();
-  let placed = 0;
-  // Simple sequential fill
+  if (!jpOnly.length) return 0;
+
+  // Build queue: what needs to be placed
   const queue = [];
   assigns.forEach(a => {
-    for(let i=0;i<a.jamPerMinggu;i++) queue.push({mapelId:a.mapelId,guruId:a.guruId});
+    const already = Object.values(DB.jadwal[kId]).filter(s=>s.mapelId===a.mapelId).length;
+    const remaining = Math.max(0, a.jamPerMinggu - already);
+    for (let i=0;i<remaining;i++) queue.push({mapelId:a.mapelId, guruId:a.guruId});
   });
-  // shuffle
-  queue.sort(()=>Math.random()-0.5);
-  for (let hi=0;hi<haris.length && queue.length;hi++) {
-    for (let ji=0;ji<DB.jamPelajaran.length && queue.length;ji++) {
-      if (DB.jamPelajaran[ji].tipe==='istirahat') continue;
-      const key = `${haris[hi]}-${ji}`;
-      if (DB.jadwal[kId][key]) continue;
+
+  if (mode === 'smart' || mode === 'balanced') {
+    // Smart: spread mapel across days, avoid guru conflicts
+    queue.sort(()=>Math.random()-0.5);
+  } else if (mode === 'morning') {
+    // Morning first: sort by jam ascending (already sequential)
+    queue.sort(()=>Math.random()-0.5);
+  }
+
+  let placed = 0;
+  const slots = [];
+  haris.forEach((hari,hi) => {
+    jpOnly.forEach((jam,ji) => {
+      const realJi = DB.jamPelajaran.indexOf(jam);
+      const key = `${hari}-${realJi}`;
+      if (!DB.jadwal[kId][key]) slots.push({hari,jamIdx:realJi,key,hi,ji});
+    });
+  });
+
+  if (mode === 'balanced') {
+    // Interleave slots to balance across days
+    const byDay = {};
+    haris.forEach(h=>byDay[h]=[]);
+    slots.forEach(s=>byDay[s.hari].push(s));
+    const balanced = [];
+    let more = true;
+    let di = 0;
+    while(more) {
+      more = false;
+      for(let h=0;h<haris.length;h++) {
+        if(byDay[haris[h]][di]) { balanced.push(byDay[haris[h]][di]); more=true; }
+      }
+      di++;
+    }
+    balanced.forEach(slot => {
+      if (!queue.length) return;
       const item = queue.shift();
-      DB.jadwal[kId][key] = {mapelId:item.mapelId,guruId:item.guruId,room:''};
+      // check guru conflict across classes
+      if (!isGuruConflict(item.guruId, slot.hari, slot.jamIdx, kId)) {
+        DB.jadwal[kId][slot.key] = {mapelId:item.mapelId, guruId:item.guruId, room:''};
+        placed++;
+      } else {
+        queue.push(item); // push back
+      }
+    });
+  } else {
+    slots.forEach(slot => {
+      if (!queue.length) return;
+      const item = queue[0];
+      if (!isGuruConflict(item.guruId, slot.hari, slot.jamIdx, kId)) {
+        queue.shift();
+        DB.jadwal[kId][slot.key] = {mapelId:item.mapelId, guruId:item.guruId, room:''};
+        placed++;
+      }
+    });
+    // Second pass: place remaining without conflict check
+    let si = 0;
+    while(queue.length && si < slots.length) {
+      const slot = slots[si++];
+      if (DB.jadwal[kId][slot.key]) continue;
+      const item = queue.shift();
+      DB.jadwal[kId][slot.key] = {mapelId:item.mapelId, guruId:item.guruId, room:''};
       placed++;
     }
   }
-  saveDB(); renderTimetable();
+
+  saveDB();
+  return placed;
+}
+
+function isGuruConflict(guruId, hari, jamIdx, excludeKelasId) {
+  if (!guruId) return false;
+  const key = `${hari}-${jamIdx}`;
+  return Object.entries(DB.jadwal).some(([kid,kj])=>{
+    if (kid===excludeKelasId) return false;
+    return kj[key]?.guruId === guruId;
+  });
+}
+
+function autoFillJadwal() {
+  const kId = document.getElementById('ttKelas').value;
+  if (!kId) { toast('Pilih kelas dulu!','','error'); return; }
+  const placed = autoFillKelas(kId, 'smart', false);
+  renderTimetable();
   toast(`Auto-fill selesai!`,`${placed} slot terisi`);
 }
 
@@ -2038,7 +2516,470 @@ function checkKonflik() {
   else toast(`${konflik.length} konflik ditemukan!`,konflik.slice(0,2).join('; '),'warning');
 }
 
-function printTimetable() { window.print(); }
+function printTimetable() { openPrintModal(); }
+
+// ================ MEGA GRID ================
+let dragPayload = null; // { type: 'pool'|'slot', mapelId, guruId, fromKelasId, fromKey }
+
+function goMegaPage() {
+  goPage('mega');
+}
+
+function refreshMegaFilters() {
+  const fk = document.getElementById('megaFilterKelas');
+  const fg = document.getElementById('megaFilterGuru');
+  const fm = document.getElementById('megaFilterMapel');
+  const pk = document.getElementById('poolKelasSelect');
+  const pg = document.getElementById('poolGuruSelect');
+
+  const curFk=fk.value, curFg=fg.value, curFm=fm.value, curPk=pk.value, curPg=pg.value;
+
+  fk.innerHTML='<option value="">Semua Kelas</option>'+DB.kelas.map(k=>`<option value="${k.id}">${k.nama}</option>`).join('');
+  fg.innerHTML='<option value="">Semua Guru</option>'+DB.guru.map(g=>`<option value="${g.id}">${g.nama}</option>`).join('');
+  fm.innerHTML='<option value="">Semua Mapel</option>'+DB.mapel.map(m=>`<option value="${m.id}">[${m.kode}] ${m.nama}</option>`).join('');
+  pk.innerHTML='<option value="">-- Pilih Kelas --</option>'+DB.kelas.map(k=>`<option value="${k.id}">${k.nama}</option>`).join('');
+  pg.innerHTML='<option value="">-- Guru (opsional) --</option>'+DB.guru.map(g=>`<option value="${g.id}">${g.nama}</option>`).join('');
+
+  if(curFk) fk.value=curFk;
+  if(curFg) fg.value=curFg;
+  if(curFm) fm.value=curFm;
+  if(curPk) pk.value=curPk;
+  if(curPg) pg.value=curPg;
+}
+
+function clearMegaFilters() {
+  document.getElementById('megaFilterKelas').value='';
+  document.getElementById('megaFilterGuru').value='';
+  document.getElementById('megaFilterMapel').value='';
+  document.getElementById('megaShowConflictOnly').checked=false;
+  renderMegaGrid();
+}
+
+function renderMegaGrid() {
+  refreshMegaFilters();
+  const fKelas = document.getElementById('megaFilterKelas').value;
+  const fGuru = document.getElementById('megaFilterGuru').value;
+  const fMapel = document.getElementById('megaFilterMapel').value;
+  const showConflictOnly = document.getElementById('megaShowConflictOnly').checked;
+
+  const container = document.getElementById('megaGridContainer');
+  const kelasList = fKelas ? DB.kelas.filter(k=>k.id===fKelas) : DB.kelas;
+  const haris = getHaris();
+  const jams = DB.jamPelajaran;
+
+  if (!kelasList.length || !jams.length) {
+    container.innerHTML = '<div style="padding:60px;text-align:center;color:var(--text3);"><div style="font-size:48px;">🧱</div><p>Tambah kelas & jam pelajaran di Setup terlebih dahulu</p></div>';
+    return;
+  }
+
+  let totalConflicts = 0;
+
+  let html = `<table class="mega-table" cellspacing="2">
+    <thead>
+      <tr>
+        <th class="mh-empty">Jam</th>`;
+
+  // Group header: one column per class
+  kelasList.forEach(kls => {
+    const j = DB.jurusan.find(x=>x.id===kls.jurusanId);
+    html += `<th class="mh-class" style="border-left:3px solid ${j?j.color:'var(--border)'};">${kls.nama}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  // Row group per hari
+  haris.forEach((hari, hi) => {
+    // Day separator
+    html += `<tr><td colspan="${kelasList.length+1}" style="padding:4px 8px;background:var(--bg2);font-size:9px;font-weight:800;color:var(--text3);letter-spacing:2px;text-transform:uppercase;border-radius:4px;">${hari}</td></tr>`;
+
+    jams.forEach((jam, ji) => {
+      const isIst = jam.tipe === 'istirahat';
+      html += `<tr>`;
+      // Time cell
+      if (isIst) {
+        html += `<td class="mt-time"><div style="font-size:9px;color:var(--amber);font-weight:700;">☕ ${jam.mulai}</div></td>`;
+      } else {
+        html += `<td class="mt-time"><div class="time-label">JP${jam.no}<br><span style="font-size:8px;">${jam.mulai}</span></div></td>`;
+      }
+
+      kelasList.forEach(kls => {
+        if (isIst) {
+          html += `<td class="mt-slot mt-istirahat"><div class="mt-istirahat-lbl">☕</div></td>`;
+          return;
+        }
+        const key = `${hari}-${ji}`;
+        const slot = (DB.jadwal[kls.id]||{})[key];
+
+        // Conflict check
+        let isConflict = false;
+        if (slot?.guruId) isConflict = isGuruConflict(slot.guruId, hari, ji, null) && checkSlotConflict(slot.guruId, hari, ji, kls.id);
+
+        if (isConflict) totalConflicts++;
+
+        // Filter check
+        let show = true;
+        if (fGuru && slot?.guruId !== fGuru) show = false;
+        if (fMapel && slot?.mapelId !== fMapel) show = false;
+        if (showConflictOnly && !isConflict) { html += `<td class="mt-slot"></td>`; return; }
+
+        const m = slot ? DB.mapel.find(x=>x.id===slot.mapelId) : null;
+        const g = slot ? DB.guru.find(x=>x.id===slot.guruId) : null;
+        const col = m ? m.color : '#3b82f6';
+
+        html += `<td class="mt-slot${slot?' mt-filled':''}${isConflict?' mt-conflict':''}"
+          data-kelasid="${kls.id}"
+          data-key="${key}"
+          data-hari="${hari}"
+          data-ji="${ji}"
+          ondragover="event.preventDefault();this.classList.add('mt-drop-hover')"
+          ondragleave="this.classList.remove('mt-drop-hover')"
+          ondrop="onMegaDrop(event,'${kls.id}','${key}','${hari}',${ji})"
+          onclick="onMegaSlotClick('${kls.id}','${key}','${hari}',${ji})"
+        >`;
+
+        if (slot && show && m) {
+          html += `<div class="paving-brick${isConflict?' pb-conflict':''}"
+            style="background:${col}cc;border-left-color:${m.color};"
+            draggable="true"
+            ondragstart="onPavingDragStart(event,'slot','${kls.id}','${key}','${slot.mapelId}','${slot.guruId||''}')"
+          >
+            ${isConflict?'<span class="pb-conf-icon">⚠️</span>':''}
+            <div class="pb-mapel">${m.kode}</div>
+            <div class="pb-guru">${g?g.nama.split(' ').slice(-1)[0]:'—'}</div>
+            <button class="pb-del" onclick="event.stopPropagation();delMegaSlot('${kls.id}','${key}')">✕</button>
+          </div>`;
+        } else if (!slot) {
+          html += `<div class="add-hint">+</div>`;
+        }
+
+        html += `</td>`;
+      });
+      html += `</tr>`;
+    });
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+
+  // Update conflict badge
+  const badge = document.getElementById('megaConflictBadge');
+  if (totalConflicts > 0) {
+    badge.className = 'conflict-counter';
+    badge.textContent = `⚠ ${totalConflicts} Konflik`;
+  } else {
+    badge.className = 'conflict-counter ok';
+    badge.textContent = '✅ 0 Konflik';
+  }
+}
+
+function checkSlotConflict(guruId, hari, jamIdx, thisKelasId) {
+  if (!guruId) return false;
+  const key = `${hari}-${jamIdx}`;
+  let count = 0;
+  Object.entries(DB.jadwal).forEach(([kid,kj]) => {
+    if (kj[key]?.guruId === guruId) count++;
+  });
+  return count > 1;
+}
+
+function onMegaSlotClick(kelasId, key, hari, jamIdx) {
+  // If drag payload from pool
+  if (dragPayload && dragPayload.type === 'pool') {
+    placeFromPool(kelasId, key, hari, jamIdx);
+    return;
+  }
+  // Otherwise open modal
+  pendingSlot = {kId:kelasId, key, hari, jamIdx};
+  openAddSlot(kelasId, key, hari, jamIdx);
+}
+
+function onMegaDrop(e, kelasId, key, hari, jamIdx) {
+  e.preventDefault();
+  const td = e.currentTarget;
+  td.classList.remove('mt-drop-hover');
+
+  if (!dragPayload) return;
+
+  if (dragPayload.type === 'pool') {
+    placeFromPool(kelasId, key, hari, jamIdx);
+  } else if (dragPayload.type === 'slot') {
+    // Move existing slot
+    const {fromKelasId, fromKey, mapelId, guruId} = dragPayload;
+    if (!DB.jadwal[kelasId]) DB.jadwal[kelasId] = {};
+    if (DB.jadwal[kelasId][key] && !(fromKelasId===kelasId && fromKey===key)) {
+      toast('Slot sudah terisi!','','warning'); dragPayload=null; return;
+    }
+    // Remove from source
+    if (DB.jadwal[fromKelasId]) delete DB.jadwal[fromKelasId][fromKey];
+    // Place at target
+    DB.jadwal[kelasId][key] = {mapelId, guruId, room:''};
+    saveDB();
+    renderMegaGrid();
+    renderPavingPool();
+    toast('Brick dipindahkan ✓');
+  }
+  dragPayload = null;
+  hideDragGhost();
+}
+
+function placeFromPool(kelasId, key, hari, jamIdx) {
+  if (!dragPayload) return;
+  const {mapelId, guruId} = dragPayload;
+  if (!DB.jadwal[kelasId]) DB.jadwal[kelasId] = {};
+
+  // Check slot occupied
+  if (DB.jadwal[kelasId][key]) { toast('Slot sudah terisi!','','warning'); dragPayload=null; return; }
+
+  // Check JP quota
+  const m = DB.mapel.find(x=>x.id===mapelId);
+  const assigns = DB.assignMapel[kelasId]||[];
+  const assign = assigns.find(a=>a.mapelId===mapelId);
+  if (assign) {
+    const used = Object.values(DB.jadwal[kelasId]).filter(s=>s.mapelId===mapelId).length;
+    if (used >= assign.jamPerMinggu) { toast(`Quota JP ${m?m.kode:'mapel'} penuh!`,'','warning'); dragPayload=null; return; }
+  }
+
+  DB.jadwal[kelasId][key] = {mapelId, guruId, room:''};
+
+  const conflict = checkSlotConflict(guruId, hari, jamIdx, null);
+  saveDB();
+  renderMegaGrid();
+  renderPavingPool();
+  if (conflict) toast('⚠ Tabrakan guru terdeteksi!','Brick ditempatkan dengan tanda konflik','warning');
+  else toast('Brick ditempatkan ✓');
+  dragPayload = null;
+  hideDragGhost();
+}
+
+function delMegaSlot(kelasId, key) {
+  if (DB.jadwal[kelasId]) delete DB.jadwal[kelasId][key];
+  saveDB();
+  renderMegaGrid();
+  renderPavingPool();
+}
+
+function onPavingDragStart(e, type, kelasId, key, mapelId, guruId) {
+  dragPayload = {type, fromKelasId:kelasId, fromKey:key, mapelId, guruId};
+  e.dataTransfer.setData('text/plain','brick');
+  const m = DB.mapel.find(x=>x.id===mapelId);
+  showDragGhost(m?m.kode:'?', m?m.color:'#3b82f6');
+}
+
+function onPoolBrickDragStart(e, mapelId, guruId) {
+  const kId = document.getElementById('poolKelasSelect').value;
+  dragPayload = {type:'pool', mapelId, guruId, fromKelasId:kId};
+  e.dataTransfer.setData('text/plain','pool');
+  const m = DB.mapel.find(x=>x.id===mapelId);
+  showDragGhost(m?m.kode:'?', m?m.color:'#3b82f6');
+}
+
+// Ghost follow cursor
+document.addEventListener('dragover', e => {
+  const g = document.getElementById('dragGhost');
+  if (dragPayload) {
+    g.style.display='block';
+    g.style.left=(e.clientX+12)+'px';
+    g.style.top=(e.clientY+12)+'px';
+  }
+});
+document.addEventListener('dragend', () => { hideDragGhost(); dragPayload=null; });
+
+function showDragGhost(label, color) {
+  const g = document.getElementById('dragGhost');
+  g.textContent = label;
+  g.style.background = color;
+  g.style.display = 'block';
+}
+function hideDragGhost() {
+  document.getElementById('dragGhost').style.display='none';
+}
+
+// ================ PAVING POOL ================
+function renderPavingPool() {
+  const kelasId = document.getElementById('poolKelasSelect').value;
+  const guruFilter = document.getElementById('poolGuruSelect').value;
+  const body = document.getElementById('pavingPoolBody');
+
+  if (!kelasId) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Pilih kelas untuk melihat brick tersedia</div>';
+    return;
+  }
+
+  const assigns = DB.assignMapel[kelasId]||[];
+  if (!assigns.length) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Belum ada mapel di-assign ke kelas ini</div>';
+    return;
+  }
+
+  const jadwalKls = DB.jadwal[kelasId]||{};
+  let html = '';
+
+  assigns.forEach(a => {
+    const m = DB.mapel.find(x=>x.id===a.mapelId);
+    const g = DB.guru.find(x=>x.id===a.guruId);
+    if (!m) return;
+    if (guruFilter && a.guruId !== guruFilter) return;
+
+    const usedCount = Object.values(jadwalKls).filter(s=>s.mapelId===a.mapelId).length;
+    const totalJP = a.jamPerMinggu;
+    const guruId = a.guruId;
+
+    html += `<div class="pool-mapel">
+      <div class="pool-mapel-head">
+        <div style="width:8px;height:8px;border-radius:2px;background:${m.color};"></div>
+        <span>${m.kode}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto;">${usedCount}/${totalJP} JP</span>
+      </div>
+      <div class="pool-bricks">`;
+
+    for (let i=0; i<totalJP; i++) {
+      const isUsed = i < usedCount;
+      html += `<div class="pool-brick${isUsed?' pb-used':''}"
+        style="background:${m.color}cc;"
+        title="${m.nama} — JP ${i+1}"
+        draggable="${!isUsed}"
+        ondragstart="${!isUsed?`onPoolBrickDragStart(event,'${m.id}','${guruId||''}')`:'event.preventDefault()'}"
+        onclick="${!isUsed?`onPoolBrickClick('${m.id}','${guruId||''}')`:''}">
+        <span style="position:relative;z-index:1;font-size:9px;font-weight:800;">${m.kode}</span>
+        <span class="pb-no" style="position:relative;z-index:1;">${i+1}</span>
+      </div>`;
+    }
+
+    html += `</div>
+      <div style="display:flex;gap:2px;margin-top:3px;">
+        ${Array.from({length:totalJP},(_,i)=>`<span style="width:12px;height:4px;border-radius:2px;background:${i<usedCount?m.color:'var(--border)'};display:inline-block;"></span>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  body.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px;">Tidak ada mapel yang cocok</div>';
+}
+
+function onPoolBrickClick(mapelId, guruId) {
+  // set drag payload, wait for slot click
+  dragPayload = {type:'pool', mapelId, guruId};
+  toast('Klik slot pada grid untuk menempatkan brick 🧱','atau drag langsung ke slot','info');
+}
+
+// ================ PRINT SYSTEM ================
+function openPrintModal() {
+  onPrintTypeChange();
+  openModal('modalPrint');
+}
+
+function onPrintTypeChange() {
+  const type = document.getElementById('printType').value;
+  const row = document.getElementById('printSelectRow');
+  const sel = document.getElementById('printSelect');
+  if (type==='all') { row.style.display='none'; return; }
+  row.style.display='block';
+  if (type==='kelas') sel.innerHTML = DB.kelas.map(k=>`<option value="${k.id}">${k.nama}</option>`).join('');
+  else if (type==='guru') sel.innerHTML = DB.guru.map(g=>`<option value="${g.id}">${g.nama}</option>`).join('');
+  else if (type==='mapel') sel.innerHTML = DB.mapel.map(m=>`<option value="${m.id}">${m.kode} - ${m.nama}</option>`).join('');
+}
+
+function buildPrintHtml(type, selVal) {
+  const haris = getHaris();
+  const jams = DB.jamPelajaran;
+  const s = DB.sekolah;
+  const header = `<div class="print-header"><h2>${s.nama||'SMKN 1 Sumarorong'}</h2><p>Jadwal Pelajaran — ${s.semester} ${s.tp}</p></div>`;
+
+  function buildTable(kls) {
+    const sched = DB.jadwal[kls.id]||{};
+    let t = `<h3 style="margin:8px 0 4px;">Kelas: ${kls.nama}</h3>
+    <table class="print-table">
+      <thead><tr><th>Jam</th>${haris.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>`;
+    jams.forEach((jam,ji) => {
+      const isIst = jam.tipe==='istirahat';
+      t += `<tr>`;
+      t += isIst ? `<td style="background:#f5f5f5;font-weight:bold;">Istirahat<br>${jam.mulai}–${jam.selesai}</td>`
+                 : `<td><b>JP ${jam.no}</b><br><small>${jam.mulai}–${jam.selesai}</small></td>`;
+      haris.forEach(hari => {
+        if (isIst) { t+=`<td style="background:#f9f9f9;text-align:center;font-size:9px;">☕</td>`; return; }
+        const key=`${hari}-${ji}`;
+        const slot=sched[key];
+        if (slot) {
+          const m=DB.mapel.find(x=>x.id===slot.mapelId);
+          const g=DB.guru.find(x=>x.id===slot.guruId);
+          t+=`<td><span class="print-brick" style="background:${m?m.color:'#ccc'}22;color:${m?m.color:'#333'};border:1px solid ${m?m.color+'44':'#ccc'}">${m?m.kode:'?'}</span><br><small>${g?g.nama:'—'}</small></td>`;
+        } else t+=`<td></td>`;
+      });
+      t += `</tr>`;
+    });
+    return t + `</tbody></table>`;
+  }
+
+  if (type==='all') {
+    return header + DB.kelas.map((k,i)=>`${i>0?'<div class="page-break"></div>':''}${buildTable(k)}`).join('');
+  } else if (type==='kelas') {
+    const kls = DB.kelas.find(x=>x.id===selVal);
+    return header + (kls ? buildTable(kls) : '');
+  } else if (type==='guru') {
+    const guru = DB.guru.find(x=>x.id===selVal);
+    if (!guru) return '';
+    let t = `${header}<h3>Jadwal Guru: ${guru.nama}</h3>
+    <table class="print-table">
+      <thead><tr><th>Jam</th>${haris.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+    jams.forEach((jam,ji) => {
+      if (jam.tipe==='istirahat') return;
+      t += `<tr><td><b>JP ${jam.no}</b><br><small>${jam.mulai}</small></td>`;
+      haris.forEach(hari => {
+        const key=`${hari}-${ji}`;
+        let cell='';
+        for (const kid in DB.jadwal) {
+          const slot=DB.jadwal[kid][key];
+          if (slot?.guruId===selVal) {
+            const m=DB.mapel.find(x=>x.id===slot.mapelId);
+            const k=DB.kelas.find(x=>x.id===kid);
+            cell=`<span class="print-brick" style="background:${m?m.color:'#ccc'}22;color:${m?m.color:'#333'}">${m?m.kode:'?'}</span><br><small>${k?k.nama:'—'}</small>`;
+            break;
+          }
+        }
+        t += `<td>${cell}</td>`;
+      });
+      t += `</tr>`;
+    });
+    return t + `</tbody></table>`;
+  } else if (type==='mapel') {
+    const mapel = DB.mapel.find(x=>x.id===selVal);
+    if (!mapel) return '';
+    let t = `${header}<h3>Jadwal Mapel: ${mapel.nama}</h3>
+    <table class="print-table">
+      <thead><tr><th>Kelas</th><th>Jam</th>${haris.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+    DB.kelas.forEach(kls => {
+      const sched=DB.jadwal[kls.id]||{};
+      jams.forEach((jam,ji) => {
+        if (jam.tipe==='istirahat') return;
+        haris.forEach(hari => {
+          const key=`${hari}-${ji}`;
+          const slot=sched[key];
+          if (slot?.mapelId===selVal) {
+            const g=DB.guru.find(x=>x.id===slot.guruId);
+            t+=`<tr><td>${kls.nama}</td><td>JP${jam.no}</td>`;
+            haris.forEach(h2 => {
+              const k2=`${h2}-${ji}`;
+              const s2=sched[k2];
+              if (s2?.mapelId===selVal) t+=`<td><span class="print-brick" style="background:${mapel.color}22;color:${mapel.color}">${mapel.kode}</span><br><small>${g?g.nama:'—'}</small></td>`;
+              else t+=`<td></td>`;
+            });
+            t+=`</tr>`;
+          }
+        });
+      });
+    });
+    return t + `</tbody></table>`;
+  }
+  return '';
+}
+
+function doPrint() {
+  const type = document.getElementById('printType').value;
+  const selVal = document.getElementById('printSelect').value;
+  const area = document.getElementById('printArea');
+  area.innerHTML = buildPrintHtml(type, selVal);
+  closeModal('modalPrint');
+  setTimeout(()=>window.print(), 200);
+}
 
 // ================ DASHBOARD ================
 function renderDashboard() {
@@ -2282,6 +3223,8 @@ function loadSekolahForm() {
 loadSekolahForm();
 renderDashboard();
 goSetupTab(1);
+// Init mega filters
+refreshMegaFilters();
 </script>
 </body>
 </html>
