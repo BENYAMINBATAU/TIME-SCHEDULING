@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benyamin Batau Scheduling App v4 — SMKN 1 Sumarorong</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060a12;--bg2:#0c1220;--panel:#111827;--panel2:#1a2337;--panel3:#1f2a40;
+  --sky:#38bdf8;--blue:#3b82f6;--ind:#6366f1;--amber:#f59e0b;--em:#10b981;
+  --rose:#f43f5e;--vio:#8b5cf6;--cyan:#06b6d4;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --bdr:rgba(56,189,248,0.1);--bdr2:rgba(56,189,248,0.22);
+  --r:14px;--rs:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 15% 15%,rgba(56,189,248,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 85%,rgba(99,102,241,0.04) 0%,transparent 60%);
+}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(56,189,248,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.025) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+/* ===TOPBAR=== */
+.topbar{position:sticky;top:0;z-index:300;height:60px;
+  background:rgba(6,10,18,0.92);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:12px;}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-ico{width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--sky),var(--ind));
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 0 20px rgba(56,189,248,0.25);animation:glow 3s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 0 16px rgba(56,189,248,0.2);}50%{box-shadow:0 0 30px rgba(56,189,248,0.45);}}
+.logo h1{font-size:14px;font-weight:800;letter-spacing:-0.3px;}
+.logo p{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;}
+.nav{display:flex;gap:2px;flex:1;justify-content:center;}
+.ntab{padding:7px 14px;border-radius:var(--rs);border:none;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;
+  color:var(--text3);background:transparent;transition:all .2s;display:flex;align-items:center;gap:5px;}
+.ntab:hover{color:var(--text2);background:var(--panel2);}
+.ntab.on{color:var(--sky);background:rgba(56,189,248,0.1);}
+.nbadge{background:var(--sky);color:var(--bg);border-radius:10px;padding:1px 5px;font-size:9px;font-weight:800;}
+.tact{display:flex;gap:6px;}
+
+/* ===PAGES=== */
+.page{display:none;padding:20px;position:relative;z-index:1;}
+.page.on{display:block;animation:pin .25s ease;}
+@keyframes pin{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===CARDS=== */
+.card{background:var(--panel);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;transition:border-color .2s;}
+.card:hover{border-color:var(--bdr2);}
+.ctitle{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:7px;margin-bottom:14px;}
+.ctitle::before{content:'';width:3px;height:13px;border-radius:2px;background:linear-gradient(var(--sky),var(--ind));flex-shrink:0;}
+
+/* ===GRIDS=== */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.gauto{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+
+/* ===BTNS=== */
+.btn{padding:8px 16px;border-radius:var(--rs);border:none;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;
+  transition:all .17s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+.bsky{background:var(--sky);color:var(--bg);box-shadow:0 3px 12px rgba(56,189,248,.2);}
+.bsky:hover{box-shadow:0 5px 20px rgba(56,189,248,.4);transform:translateY(-1px);}
+.bind{background:var(--ind);color:#fff;}
+.bind:hover{box-shadow:0 5px 18px rgba(99,102,241,.4);transform:translateY(-1px);}
+.bghost{background:var(--panel2);border:1px solid var(--bdr);color:var(--text2);}
+.bghost:hover{border-color:var(--bdr2);color:var(--text);}
+.bdanger{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--rose);}
+.bdanger:hover{background:rgba(244,63,94,.2);}
+.bsuccess{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--em);}
+.bsuccess:hover{background:rgba(16,185,129,.2);}
+.bamber{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--amber);}
+.bsm{padding:5px 11px;font-size:11px;}
+.bxs{padding:3px 8px;font-size:10px;border-radius:5px;}
+
+/* ===FORM=== */
+.fr{display:grid;gap:12px;margin-bottom:12px;}
+.fr.c2{grid-template-columns:1fr 1fr;}
+.fr.c3{grid-template-columns:1fr 1fr 1fr;}
+.fr.c4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+input,select,textarea{padding:8px 12px;background:var(--panel2);border:1px solid var(--bdr);
+  border-radius:var(--rs);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;transition:border-color .17s,box-shadow .17s;outline:none;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(56,189,248,.1);}
+select option{background:var(--panel2);}
+input::placeholder{color:var(--text3);}
+
+/* ===TABLE=== */
+.dtbl{width:100%;border-collapse:separate;border-spacing:0 3px;}
+.dtbl th{padding:8px 12px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;text-align:left;}
+.dtbl td{padding:10px 12px;font-size:12px;background:var(--panel2);transition:background .15s;}
+.dtbl td:first-child{border-radius:var(--rs) 0 0 var(--rs);}
+.dtbl td:last-child{border-radius:0 var(--rs) var(--rs) 0;}
+.dtbl tr:hover td{background:var(--panel3);}
+.erow td{text-align:center;color:var(--text3);padding:28px!important;background:transparent!important;font-size:12px;}
+
+/* ===BADGE=== */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;}
+.bsky2{background:rgba(56,189,248,.12);color:var(--sky);}
+.bind2{background:rgba(99,102,241,.12);color:var(--ind);}
+.bamber2{background:rgba(245,158,11,.12);color:var(--amber);}
+.bem2{background:rgba(16,185,129,.12);color:var(--em);}
+.brose2{background:rgba(244,63,94,.12);color:var(--rose);}
+.bvio2{background:rgba(139,92,246,.12);color:var(--vio);}
+
+/* ===MODAL=== */
+.overlay{position:fixed;inset:0;background:rgba(6,10,18,.88);backdrop-filter:blur(14px);
+  z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
+.overlay.on{display:flex;animation:fdin .2s ease;}
+@keyframes fdin{from{opacity:0;}to{opacity:1;}}
+.modal{background:var(--panel);border:1px solid var(--bdr2);border-radius:18px;
+  padding:24px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 24px 60px rgba(0,0,0,.5);animation:mslide .28s ease;}
+.modal.wide{max-width:750px;}
+@keyframes mslide{from{transform:translateY(18px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.mhdr h3{font-size:17px;font-weight:800;}
+.mclose{width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--bdr);
+  color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.mclose:hover{background:var(--panel3);}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:18px;border-top:1px solid var(--bdr);}
+
+/* ===TOAST=== */
+.tbox{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
+.toast{background:var(--panel);border:1px solid var(--bdr2);border-radius:11px;
+  padding:11px 16px;display:flex;align-items:center;gap:9px;min-width:260px;
+  box-shadow:0 8px 28px rgba(0,0,0,.4);transform:translateX(120%);transition:transform .28s ease;}
+.toast.show{transform:translateX(0);}
+.toast.ok{border-color:rgba(16,185,129,.3);}
+.toast.err{border-color:rgba(244,63,94,.3);}
+.toast.warn{border-color:rgba(245,158,11,.3);}
+.t-ico{font-size:17px;}
+.t-ttl{font-size:12px;font-weight:700;}
+.t-sub{font-size:10px;color:var(--text3);}
+
+/* ===WIZARD=== */
+.wiz{display:flex;gap:0;margin-bottom:28px;position:relative;}
+.wiz::before{content:'';position:absolute;top:17px;left:18px;right:18px;height:2px;background:var(--panel2);z-index:0;}
+.wstep{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative;z-index:1;cursor:pointer;}
+.wcirc{width:34px;height:34px;border-radius:50%;border:2px solid var(--bdr2);background:var(--panel);
+  color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;transition:all .3s;}
+.wstep.done .wcirc{background:var(--em);border-color:var(--em);color:#fff;}
+.wstep.act .wcirc{background:var(--sky);border-color:var(--sky);color:var(--bg);box-shadow:0 0 18px rgba(56,189,248,.4);}
+.wlbl{font-size:10px;font-weight:600;color:var(--text3);text-align:center;max-width:70px;}
+.wstep.act .wlbl{color:var(--sky);}
+.wstep.done .wlbl{color:var(--em);}
+
+/* ===PROGRESS=== */
+.pbw{background:var(--panel2);border-radius:10px;height:5px;overflow:hidden;}
+.pb{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--sky),var(--ind));transition:width .5s ease;}
+
+/* ===COLOR PICKER=== */
+.cpgrid{display:flex;gap:7px;flex-wrap:wrap;}
+.cp{width:28px;height:28px;border-radius:7px;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+.cp:hover,.cp.sel{border-color:#fff;transform:scale(1.18);}
+
+/* ===STAT CARD=== */
+.scard{background:var(--panel);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;
+  position:relative;overflow:hidden;transition:all .2s;}
+.scard::after{content:'';position:absolute;top:-24px;right:-24px;width:72px;height:72px;border-radius:50%;
+  background:var(--sc,var(--sky));opacity:.06;}
+.scard:hover{border-color:var(--bdr2);transform:translateY(-2px);}
+.sico{font-size:20px;margin-bottom:6px;}
+.snum{font-size:32px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--sc,var(--sky));}
+.slbl{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+
+/* ===DIVIDER=== */
+.dvd{height:1px;background:var(--bdr);margin:18px 0;}
+
+/* ===SCROLLBAR=== */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px;}
+
+/* ============================================
+   TIMETABLE — MERGED CELLS + DRAG & DROP
+   ============================================ */
+.tt-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.tt-outer{overflow-x:auto;border-radius:var(--r);border:1px solid var(--bdr);background:var(--panel);}
+
+/* The actual grid uses CSS Grid, not HTML table, for proper merging */
+.tt-grid-wrap{padding:8px;min-width:900px;}
+
+/* Header row */
+.tt-header{display:grid;gap:3px;margin-bottom:3px;}
+.tt-hcell{background:var(--panel2);border-radius:6px;padding:9px 6px;
+  font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;
+  text-transform:uppercase;text-align:center;}
+.tt-hcell.time-hcell{background:transparent;}
+
+/* Day column container */
+.tt-body{display:grid;gap:3px;}
+.tt-row{display:grid;gap:3px;align-items:start;}
+
+/* Time label cell */
+.tt-time{background:transparent;display:flex;align-items:center;justify-content:center;
+  min-height:66px;border-radius:6px;}
+.tt-tl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);text-align:center;line-height:1.6;}
+
+/* Empty slot */
+.tt-slot{min-height:66px;background:var(--panel2);border-radius:6px;
+  position:relative;cursor:pointer;transition:background .15s;border:2px dashed transparent;}
+.tt-slot:hover{background:var(--panel3);border-color:rgba(56,189,248,.2);}
+.tt-slot.drag-over{border-color:var(--sky);background:rgba(56,189,248,.08);}
+.slot-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--text3);opacity:0;transition:opacity .15s;pointer-events:none;}
+.tt-slot:hover .slot-hint{opacity:.5;}
+
+/* ISTIRAHAT row */
+.tt-ist{background:rgba(245,158,11,.05);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;min-height:30px;
+  font-size:10px;font-weight:700;color:var(--amber);letter-spacing:1.5px;text-transform:uppercase;
+  border:1px solid rgba(245,158,11,.12);}
+
+/* FILLED block — spans multiple rows using rowspan data */
+.tt-block{border-radius:6px;padding:8px 10px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-start;
+  border-left:3px solid rgba(255,255,255,.2);cursor:grab;
+  user-select:none;transition:opacity .15s,transform .15s;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.tt-block::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.04);}
+.tt-block:hover{transform:scale(1.01);box-shadow:0 4px 14px rgba(0,0,0,.35);}
+.tt-block.dragging{opacity:.5;transform:scale(.97);cursor:grabbing;}
+.blk-name{font-size:12px;font-weight:800;color:rgba(255,255,255,.95);position:relative;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.blk-teacher{font-size:9px;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;
+  position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;}
+.blk-room{font-size:9px;color:rgba(255,255,255,.4);position:relative;}
+.blk-span{position:absolute;top:4px;right:22px;font-size:9px;color:rgba(255,255,255,.5);
+  font-family:'JetBrains Mono',monospace;font-weight:700;}
+.blk-del{position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;
+  background:rgba(0,0,0,.45);border:none;color:#fff;font-size:9px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;z-index:10;}
+.tt-block:hover .blk-del{display:flex;}
+.blk-resize{position:absolute;bottom:0;left:0;right:0;height:8px;cursor:s-resize;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;}
+.tt-block:hover .blk-resize{opacity:1;}
+.blk-resize::before{content:'';width:28px;height:3px;border-radius:2px;background:rgba(255,255,255,.3);}
+
+/* Progress info bar */
+.pbar-row{display:flex;align-items:center;gap:14px;padding:12px 16px;
+  background:var(--panel);border:1px solid var(--bdr);border-radius:var(--r);
+  margin-bottom:14px;flex-wrap:wrap;}
+
+/* Block span selector */
+.span-sel{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.span-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--bdr);
+  background:var(--panel2);color:var(--text2);font-size:13px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;font-family:'JetBrains Mono',monospace;}
+.span-btn:hover,.span-btn.sel{background:var(--sky);color:var(--bg);border-color:var(--sky);}
+
+/* WARN BOX */
+.warnbox{padding:10px;background:rgba(244,63,94,.09);border:1px solid rgba(244,63,94,.2);
+  border-radius:7px;font-size:11px;color:var(--rose);margin-top:8px;display:none;}
+
+/* TAG */
+.tag{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:600;background:var(--panel3);color:var(--text2);border:1px solid var(--bdr);}
+
+/* WELCOME */
+.wbanner{background:linear-gradient(135deg,rgba(56,189,248,.08),rgba(99,102,241,.08));
+  border:1px solid var(--bdr2);border-radius:var(--r);padding:24px;margin-bottom:20px;
+  position:relative;overflow:hidden;}
+.wbanner::before{content:'🎓';position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  font-size:58px;opacity:.12;}
+.wbanner h2{font-size:24px;font-weight:900;letter-spacing:-.5px;
+  background:linear-gradient(90deg,var(--sky),var(--ind));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.wbanner p{color:var(--text2);margin-top:5px;font-size:13px;}
+
+/* ASSIGN TABLE */
+.as-row{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--panel2);border-radius:var(--rs);margin-bottom:5px;border:1px solid var(--bdr);}
+
+/* JAM ROW */
+.jrow{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--panel2);border-radius:var(--rs);margin-bottom:5px;border:1px solid var(--bdr);}
+.jrow.ist{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.04);}
+.jnum{width:26px;height:26px;border-radius:6px;background:var(--panel3);
+  display:flex;align-items:center;justify-content:center;font-size:10px;
+  font-weight:800;color:var(--text2);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+
+/* JURUSAN CARD */
+.jcard{background:var(--panel);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;
+  transition:border-color .2s;}
+.jcard:hover{border-color:var(--bdr2);}
+
+/* SECTION HDR */
+.shdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;}
+.stitle h2{font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.stitle p{font-size:13px;color:var(--text2);margin-top:3px;}
+.acc{width:36px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--sky),var(--ind));margin-bottom:7px;}
+
+@media(max-width:860px){.g4,.g3,.g2{grid-template-columns:1fr 1fr;}.fr.c4,.fr.c3{grid-template-columns:1fr 1fr;}}
+@media(max-width:540px){.g4,.g3,.g2{grid-template-columns:1fr;}.fr.c2,.fr.c3,.fr.c4{grid-template-columns:1fr;}.nav{display:none;}}
+
+/* PRINT */
+@media print{
+  .topbar,.tbox,.overlay{display:none!important;}
+  .page{display:block!important;}
+  body{background:#fff;color:#000;}
+  .tt-block{box-shadow:none;border:1px solid #ccc;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-ico">📋</div>
+    <div><h1>BENYAMIN BATAU</h1><p>SMKN 1 SUMARORONG — v4.0</p></div>
+  </div>
+  <div class="nav">
+    <button class="ntab on" onclick="gp('dash')" id="tb-dash">🏠 Dashboard</button>
+    <button class="ntab" onclick="gp('setup')" id="tb-setup">⚙️ Setup Data</button>
+    <button class="ntab" onclick="gp('jadwal')" id="tb-jadwal">📅 Jadwal</button>
+    <button class="ntab" onclick="gp('rekap')" id="tb-rekap">📊 Rekap</button>
+  </div>
+  <div class="tact">
+    <button class="btn bghost bsm" onclick="exportAll()">⬇ Export</button>
+    <button class="btn bghost bsm" onclick="om('mImport')">⬆ Import</button>
+    <button class="btn bsky bsm" onclick="gp('jadwal')">+ Jadwal</button>
+  </div>
+</div>
+
+<!-- ======= DASHBOARD ======= -->
+<div class="page on" id="p-dash">
+  <div class="wbanner">
+    <h2>UPTD SMKN 1 Sumarorong</h2>
+    <p>Sistem Manajemen Jadwal Pelajaran — Benyamin Batau Scheduling App</p>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;" id="dmeta"></div>
+  </div>
+  <div class="g4" id="dstats" style="margin-bottom:20px;"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ctitle">Kelengkapan Setup</div>
+      <div id="dsetup"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Progress Jadwal Per Kelas</div>
+      <div id="djadwal" style="max-height:210px;overflow-y:auto;"></div>
+    </div>
+  </div>
+  <div class="dvd"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ctitle">Beban Mengajar Guru</div>
+      <div id="dbeban" style="max-height:200px;overflow-y:auto;"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Konflik Jadwal</div>
+      <div id="dkonflik"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= SETUP DATA ======= -->
+<div class="page" id="p-setup">
+  <div class="wiz" id="wizEl"></div>
+  <div id="spanels"></div>
+</div>
+
+<!-- ======= JADWAL ======= -->
+<div class="page" id="p-jadwal">
+  <div class="shdr">
+    <div class="stitle"><div class="acc"></div><h2>Timetable Jadwal</h2><p>Klik sel untuk tambah • Drag untuk pindah • Tarik bawah untuk extend</p></div>
+  </div>
+  <div class="tt-toolbar">
+    <div class="fg" style="width:200px;"><label>Pilih Kelas</label>
+      <select id="ttKelas" onchange="renderTT()">
+        <option value="">-- Pilih Kelas --</option>
+      </select>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn bghost bsm" onclick="clearTTKelas()">🗑 Hapus Jadwal Ini</button>
+      <button class="btn bsuccess bsm" onclick="autoFill()">⚡ Auto-Fill</button>
+      <button class="btn bamber bsm" onclick="cekKonflik()">⚠ Cek Konflik</button>
+      <button class="btn bghost bsm" onclick="window.print()">🖨 Print</button>
+    </div>
+    <div id="ttbadge" style="margin-top:16px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+  </div>
+  <div id="ttProgress" style="margin-bottom:12px;"></div>
+  <div class="tt-outer" id="ttOuter">
+    <div style="padding:60px;text-align:center;color:var(--text3);">
+      <div style="font-size:48px;margin-bottom:10px;">📅</div>
+      <p>Pilih kelas untuk mulai menyusun jadwal</p>
+    </div>
+  </div>
+  <!-- Legend -->
+  <div id="ttLegend" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"></div>
+</div>
+
+<!-- ======= REKAP ======= -->
+<div class="page" id="p-rekap">
+  <div class="shdr">
+    <div class="stitle"><div class="acc"></div><h2>Rekap & Laporan</h2></div>
+    <button class="btn bsky bsm" onclick="exportAll()">⬇ Export JSON</button>
+  </div>
+  <div class="g4" id="rstats" style="margin-bottom:20px;"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ctitle">Beban Mengajar Guru</div>
+      <table class="dtbl"><thead><tr><th>Guru</th><th>Jam Terjadwal</th><th>Maks</th><th>Status</th></tr></thead>
+      <tbody id="rguruTb"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="ctitle">Kelengkapan Jadwal Per Kelas</div>
+      <div id="rkelengkapan" style="max-height:300px;overflow-y:auto;"></div>
+    </div>
+  </div>
+  <div class="dvd"></div>
+  <div class="card">
+    <div class="ctitle">Detail Assign Mapel Per Kelas</div>
+    <div id="rdetail"></div>
+  </div>
+</div>
+
+<!-- ========= MODALS ========= -->
+
+<!-- Jurusan -->
+<div class="overlay" id="mJurusan">
+  <div class="modal">
+    <div class="mhdr"><h3>➕ Tambah Jurusan</h3><button class="mclose" onclick="cm('mJurusan')">✕</button></div>
+    <div class="fr c2">
+      <div class="fg"><label>Kode</label><input id="j_kode" placeholder="TKJ, AKL, DPIB..."></div>
+      <div class="fg"><label>Nama Jurusan</label><input id="j_nama" placeholder="Nama jurusan..."></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Kompetensi Keahlian (Nama Lengkap)</label><input id="j_nl" placeholder="Nama lengkap kompetensi keahlian..."></div></div>
+    <div class="fr c2">
+      <div class="fg"><label>Bidang Keahlian</label><input id="j_bid" placeholder="Teknologi Informasi..."></div>
+      <div class="fg"><label>Jumlah Rombel/Tingkat</label><input type="number" id="j_rombel" value="1" min="1" max="8"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Warna Label</label><div class="cpgrid" id="cpJ"></div></div></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mJurusan')">Batal</button>
+      <button class="btn bsky" onclick="saveJurusan()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Kelas -->
+<div class="overlay" id="mKelas">
+  <div class="modal">
+    <div class="mhdr"><h3>➕ Tambah Kelas</h3><button class="mclose" onclick="cm('mKelas')">✕</button></div>
+    <div class="fr c3">
+      <div class="fg"><label>Tingkat</label>
+        <select id="k_t"><option value="X">X</option><option value="XI">XI</option><option value="XII">XII</option><option value="XIII">XIII</option></select>
+      </div>
+      <div class="fg"><label>Jurusan</label><select id="k_j"><option value="">-- Pilih --</option></select></div>
+      <div class="fg"><label>Rombel</label>
+        <select id="k_r"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+      </div>
+    </div>
+    <div class="fr c2">
+      <div class="fg"><label>Nama Kelas</label><input id="k_nm" placeholder="Otomatis terisi..."></div>
+      <div class="fg"><label>Wali Kelas</label><select id="k_w"><option value="">-- Pilih --</option></select></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Ruangan Utama</label><input id="k_ru" placeholder="R.12, Lab TKJ..."></div></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mKelas')">Batal</button>
+      <button class="btn bsky" onclick="saveKelas()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mapel -->
+<div class="overlay" id="mMapel">
+  <div class="modal wide">
+    <div class="mhdr"><h3>➕ Tambah Mata Pelajaran</h3><button class="mclose" onclick="cm('mMapel')">✕</button></div>
+    <div class="fr c3">
+      <div class="fg"><label>Kode</label><input id="m_kode" placeholder="MTK, B.IND..."></div>
+      <div class="fg" style="grid-column:span 2"><label>Nama Mapel</label><input id="m_nama" placeholder="Nama lengkap mata pelajaran..."></div>
+    </div>
+    <div class="fr c3">
+      <div class="fg"><label>Kelompok</label>
+        <select id="m_kel">
+          <option value="Umum">Kelompok Umum (A)</option>
+          <option value="Adaptif">Kelompok Adaptif (B)</option>
+          <option value="Produktif">Kelompok Produktif (C)</option>
+          <option value="Mulok">Muatan Lokal</option>
+          <option value="Pengembangan">Pengembangan Diri</option>
+        </select>
+      </div>
+      <div class="fg"><label>Jurusan (Kosong=Semua)</label><select id="m_jur"><option value="">Semua Jurusan</option></select></div>
+      <div class="fg"><label>KKM</label><input type="number" id="m_kkm" value="75" min="0" max="100"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Warna Label</label><div class="cpgrid" id="cpM"></div></div></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mMapel')">Batal</button>
+      <button class="btn bsky" onclick="saveMapel()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Guru -->
+<div class="overlay" id="mGuru">
+  <div class="modal wide">
+    <div class="mhdr"><h3>➕ Tambah Guru</h3><button class="mclose" onclick="cm('mGuru')">✕</button></div>
+    <div class="fr c2">
+      <div class="fg"><label>NIP/NUPTK</label><input id="g_nip" placeholder="NIP atau NUPTK..."></div>
+      <div class="fg"><label>Nama Lengkap</label><input id="g_nama" placeholder="Nama guru..."></div>
+    </div>
+    <div class="fr c3">
+      <div class="fg"><label>Status</label>
+        <select id="g_st"><option value="PNS">PNS</option><option value="PPPK">P3K/PPPK</option><option value="GTT">GTT/Honor</option><option value="Kontrak">Kontrak</option></select>
+      </div>
+      <div class="fg"><label>Maks Jam/Minggu</label><input type="number" id="g_mj" value="24" min="1" max="48"></div>
+      <div class="fg"><label>No. HP</label><input id="g_hp" placeholder="08..."></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Mapel Diampu (pilih banyak)</label>
+        <div id="gMapelChk" style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:var(--panel2);border-radius:var(--rs);border:1px solid var(--bdr);max-height:130px;overflow-y:auto;margin-top:4px;"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mGuru')">Batal</button>
+      <button class="btn bsky" onclick="saveGuru()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Jam -->
+<div class="overlay" id="mJam">
+  <div class="modal">
+    <div class="mhdr"><h3>➕ Tambah Slot Waktu</h3><button class="mclose" onclick="cm('mJam')">✕</button></div>
+    <div class="fr c3">
+      <div class="fg"><label>Jam Ke-</label><input type="number" id="jm_no" min="1"></div>
+      <div class="fg"><label>Mulai</label><input type="time" id="jm_s"></div>
+      <div class="fg"><label>Selesai</label><input type="time" id="jm_e"></div>
+    </div>
+    <div class="fr"><div class="fg"><label>Tipe</label>
+      <select id="jm_t"><option value="jp">Jam Pelajaran</option><option value="ist">Istirahat</option></select>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mJam')">Batal</button>
+      <button class="btn bsky" onclick="saveJam()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign -->
+<div class="overlay" id="mAssign">
+  <div class="modal">
+    <div class="mhdr"><h3>➕ Assign Mapel ke Kelas</h3><button class="mclose" onclick="cm('mAssign')">✕</button></div>
+    <div class="fr"><div class="fg"><label>Mata Pelajaran</label><select id="as_m"><option value="">-- Pilih Mapel --</option></select></div></div>
+    <div class="fr c2">
+      <div class="fg"><label>Guru Pengampu</label><select id="as_g"><option value="">-- Pilih Guru --</option></select></div>
+      <div class="fg"><label>Total Jam Per Minggu</label><input type="number" id="as_j" value="2" min="1" max="20"></div>
+    </div>
+    <div class="fr">
+      <div class="fg">
+        <label>Pola Pertemuan Per Hari (Blok Jam Sekaligus)</label>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Contoh: 8 jam/minggu bisa diatur 2 jam×4 hari, atau 4 jam×2 hari, dll.</div>
+        <div class="span-sel" id="asSpanSel"></div>
+        <div style="font-size:11px;color:var(--sky);margin-top:6px;" id="asSpanInfo"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mAssign')">Batal</button>
+      <button class="btn bsky" onclick="saveAssign()">💾 Assign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Jadwal Slot Modal -->
+<div class="overlay" id="mSlot">
+  <div class="modal">
+    <div class="mhdr"><h3 id="mSlotTitle">📅 Tambah Jadwal</h3><button class="mclose" onclick="cm('mSlot')">✕</button></div>
+    <div id="mSlotInfo" style="padding:9px 13px;background:var(--panel2);border-radius:var(--rs);margin-bottom:14px;font-size:12px;color:var(--text2);"></div>
+    <div class="fr">
+      <div class="fg"><label>Berapa Jam Sekaligus (Blok)?</label>
+        <div class="span-sel" id="slotSpanSel"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="slotSpanNote"></div>
+      </div>
+    </div>
+    <div class="fr"><div class="fg"><label>Mata Pelajaran</label>
+      <select id="sl_m" onchange="onSlotMapelChange()"><option value="">-- Pilih Mapel --</option></select>
+    </div></div>
+    <div class="fr c2">
+      <div class="fg"><label>Guru</label><select id="sl_g" onchange="checkSlotKonflik()"><option value="">-- Pilih Guru --</option></select></div>
+      <div class="fg"><label>Ruangan</label><input id="sl_r" placeholder="R.12, Lab..."></div>
+    </div>
+    <div class="warnbox" id="slotWarn"></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mSlot')">Batal</button>
+      <button class="btn bsky" onclick="saveSlot()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Copy Assign -->
+<div class="overlay" id="mCopyAssign">
+  <div class="modal">
+    <div class="mhdr"><h3>📋 Salin Assign dari Kelas Lain</h3><button class="mclose" onclick="cm('mCopyAssign')">✕</button></div>
+    <div class="fr"><div class="fg"><label>Pilih Kelas Sumber</label><select id="copyFrom"><option value="">-- Pilih --</option></select></div></div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mCopyAssign')">Batal</button>
+      <button class="btn bsky" onclick="doCopy()">Salin</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import -->
+<div class="overlay" id="mImport">
+  <div class="modal">
+    <div class="mhdr"><h3>⬆️ Import JSON</h3><button class="mclose" onclick="cm('mImport')">✕</button></div>
+    <div class="fr"><div class="fg"><label>Paste JSON atau Upload File</label>
+      <textarea id="importRaw" rows="7" placeholder='Paste JSON data...'></textarea>
+    </div></div>
+    <div style="margin-bottom:12px;">
+      <input type="file" id="importFile" accept=".json" onchange="readFile()" style="display:none;">
+      <button class="btn bghost bsm" onclick="document.getElementById('importFile').click()">📁 Upload File JSON</button>
+    </div>
+    <div class="mfoot">
+      <button class="btn bghost" onclick="cm('mImport')">Batal</button>
+      <button class="btn bsky" onclick="doImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<div class="tbox" id="tbox"></div>
+
+<script>
+// ================ STORE ================
+const SK='bbv4';
+const COLORS=['#38bdf8','#3b82f6','#6366f1','#8b5cf6','#a855f7','#ec4899','#f43f5e',
+  '#f97316','#f59e0b','#eab308','#84cc16','#22c55e','#10b981','#14b8a6','#06b6d4','#64748b'];
+
+let DB={
+  info:{nama:'UPTD SMKN 1 Sumarorong',npsn:'',kepsek:'',tp:'2025/2026',sem:'Ganjil',alamat:'Sumarorong, Mamasa',hari:'6',kur:'Merdeka'},
+  jurusan:[],kelas:[],mapel:[],guru:[],jam:[],
+  assign:{},   // kelasId -> [{mapelId,guruId,jamPerMinggu,spanJam}]
+  jadwal:{}    // kelasId -> {hari: [{mapelId,guruId,room,span,jamIdx}]}
+};
+let cpSel={J:COLORS[0],M:COLORS[0]};
+let pendSlot=null, asSpan=1, slotSpan=1;
+
+function load(){try{const r=localStorage.getItem(SK);if(r)DB=JSON.parse(r);}catch(e){}}
+function save(){localStorage.setItem(SK,JSON.stringify(DB));}
+load();
+
+// ================ UI ================
+function gp(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(x=>x.classList.remove('on'));
+  document.getElementById('p-'+p).classList.add('on');
+  document.getElementById('tb-'+p).classList.add('on');
+  if(p==='dash')rdash();
+  if(p==='jadwal'){fillTTKelas();renderTT();}
+  if(p==='rekap')rrekap();
+}
+function om(id){
+  document.getElementById(id).classList.add('on');
+  if(id==='mJurusan')bcp('cpJ','J');
+  if(id==='mMapel'){bcp('cpM','M');fillMJurusan();}
+  if(id==='mGuru')fillGMapelChk();
+  if(id==='mKelas'){fillKJurusan();fillKWali();updKNm();}
+  if(id==='mAssign'){fillAsMapel();fillAsGuru();buildAsSpan();}
+}
+function cm(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');});
+});
+
+function toast(msg,sub='',type='ok'){
+  const icons={ok:'✅',err:'❌',warn:'⚠️',info:'ℹ️'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<div class="t-ico">${icons[type]||'ℹ️'}</div><div><div class="t-ttl">${msg}</div>${sub?`<div class="t-sub">${sub}</div>`:''}</div>`;
+  document.getElementById('tbox').appendChild(t);
+  requestAnimationFrame(()=>setTimeout(()=>t.classList.add('show'),10));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),350);},3500);
+}
+
+// ================ COLOR PICKER ================
+function bcp(elId,varKey){
+  const el=document.getElementById(elId);el.innerHTML='';
+  COLORS.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='cp'+(i===0?' sel':'');d.style.background=c;
+    d.onclick=()=>{el.querySelectorAll('.cp').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');cpSel[varKey]=c;};
+    el.appendChild(d);
+  });
+  cpSel[varKey]=COLORS[0];
+}
+
+// ================ WIZARD ================
+let curStep=1;
+const STEPS=[
+  {n:1,lbl:'Info Sekolah'},
+  {n:2,lbl:'Jurusan'},
+  {n:3,lbl:'Kelas'},
+  {n:4,lbl:'Mata Pelajaran'},
+  {n:5,lbl:'Guru'},
+  {n:6,lbl:'Jam Pelajaran'},
+  {n:7,lbl:'Assign Mapel'},
+];
+
+function buildWizard(){
+  document.getElementById('wizEl').innerHTML=STEPS.map(s=>`
+    <div class="wstep ${curStep===s.n?'act':curStep>s.n?'done':''}" onclick="goStep(${s.n})">
+      <div class="wcirc">${curStep>s.n?'✓':s.n}</div>
+      <div class="wlbl">${s.lbl}</div>
+    </div>`).join('');
+}
+
+function buildSetupPanels(){
+  document.getElementById('spanels').innerHTML=`
+  <!-- S1 -->
+  <div id="sp1">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Info Sekolah</h2></div></div>
+    <div class="card" style="max-width:600px;">
+      <div class="fr c2">
+        <div class="fg"><label>Nama Sekolah</label><input id="s_nm" value="${DB.info.nama}"></div>
+        <div class="fg"><label>NPSN</label><input id="s_npsn" value="${DB.info.npsn}"></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><label>Kepala Sekolah</label><input id="s_ks" value="${DB.info.kepsek}"></div>
+        <div class="fg"><label>Tahun Pelajaran</label>
+          <select id="s_tp"><option value="2024/2025" ${DB.info.tp==='2024/2025'?'selected':''}>2024/2025</option><option value="2025/2026" ${DB.info.tp==='2025/2026'?'selected':''}>2025/2026</option><option value="2026/2027" ${DB.info.tp==='2026/2027'?'selected':''}>2026/2027</option></select>
+        </div>
+      </div>
+      <div class="fr c3">
+        <div class="fg"><label>Semester</label>
+          <select id="s_sm"><option value="Ganjil" ${DB.info.sem==='Ganjil'?'selected':''}>Ganjil</option><option value="Genap" ${DB.info.sem==='Genap'?'selected':''}>Genap</option></select>
+        </div>
+        <div class="fg"><label>Hari Belajar</label>
+          <select id="s_hr"><option value="5" ${DB.info.hari==='5'?'selected':''}>Senin-Jumat</option><option value="6" ${DB.info.hari==='6'?'selected':''}>Senin-Sabtu</option></select>
+        </div>
+        <div class="fg"><label>Kurikulum</label>
+          <select id="s_kur"><option value="Merdeka" ${DB.info.kur==='Merdeka'?'selected':''}>Merdeka</option><option value="2013">K13</option></select>
+        </div>
+      </div>
+      <div class="fr"><div class="fg"><label>Alamat</label><input id="s_alm" value="${DB.info.alamat}"></div></div>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn bsky" onclick="saveInfo()">💾 Simpan & Lanjut →</button>
+      </div>
+    </div>
+  </div>
+  <!-- S2 -->
+  <div id="sp2" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Jurusan & Program Studi</h2></div>
+      <button class="btn bsky bsm" onclick="om('mJurusan')">+ Tambah Jurusan</button>
+    </div>
+    <div class="gauto" id="jurusanGrid"></div>
+  </div>
+  <!-- S3 -->
+  <div id="sp3" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Daftar Kelas</h2></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn bsuccess bsm" onclick="genKelas()">⚡ Auto-Generate</button>
+        <button class="btn bsky bsm" onclick="om('mKelas')">+ Tambah Manual</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="fr c3">
+        <div class="fg"><label>Cari</label><input id="skQ" oninput="rKelas()" placeholder="Nama kelas..."></div>
+        <div class="fg"><label>Tingkat</label><select id="skT" onchange="rKelas()"><option value="">Semua</option><option value="X">X</option><option value="XI">XI</option><option value="XII">XII</option><option value="XIII">XIII</option></select></div>
+        <div class="fg"><label>Jurusan</label><select id="skJ" onchange="rKelas()"><option value="">Semua</option></select></div>
+      </div>
+    </div>
+    <table class="dtbl"><thead><tr><th>#</th><th>Kelas</th><th>Tingkat</th><th>Jurusan</th><th>Wali Kelas</th><th>Ruangan</th><th>Aksi</th></tr></thead>
+    <tbody id="kelasTb"></tbody></table>
+  </div>
+  <!-- S4 -->
+  <div id="sp4" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Mata Pelajaran</h2></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn bsuccess bsm" onclick="importDefaultMapel()">📦 Import Default SMK</button>
+        <button class="btn bsky bsm" onclick="om('mMapel')">+ Tambah Mapel</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="fr c2">
+        <div class="fg"><label>Cari</label><input id="smQ" oninput="rMapel()" placeholder="Nama atau kode..."></div>
+        <div class="fg"><label>Filter Kelompok</label><select id="smK" onchange="rMapel()"><option value="">Semua</option><option value="Umum">Umum (A)</option><option value="Adaptif">Adaptif (B)</option><option value="Produktif">Produktif (C)</option><option value="Mulok">Mulok</option><option value="Pengembangan">Pengembangan Diri</option></select></div>
+      </div>
+    </div>
+    <table class="dtbl"><thead><tr><th>#</th><th>Kode</th><th>Nama Mapel</th><th>Kelompok</th><th>Jurusan</th><th>Warna</th><th>Aksi</th></tr></thead>
+    <tbody id="mapelTb"></tbody></table>
+  </div>
+  <!-- S5 -->
+  <div id="sp5" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Data Guru</h2></div>
+      <button class="btn bsky bsm" onclick="om('mGuru')">+ Tambah Guru</button>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="fr c2">
+        <div class="fg"><label>Cari</label><input id="sgQ" oninput="rGuru()" placeholder="Nama atau NIP..."></div>
+        <div class="fg"><label>Filter Mapel</label><select id="sgM" onchange="rGuru()"><option value="">Semua</option></select></div>
+      </div>
+    </div>
+    <table class="dtbl"><thead><tr><th>#</th><th>NIP</th><th>Nama Guru</th><th>Mapel</th><th>Maks Jam</th><th>Dijadwal</th><th>Aksi</th></tr></thead>
+    <tbody id="guruTb"></tbody></table>
+  </div>
+  <!-- S6 -->
+  <div id="sp6" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Jam Pelajaran</h2></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn bsuccess bsm" onclick="genJam()">⚡ Generate Default</button>
+        <button class="btn bsky bsm" onclick="om('mJam')">+ Tambah Manual</button>
+      </div>
+    </div>
+    <div class="g2">
+      <div id="jamList"></div>
+      <div class="card">
+        <div class="ctitle">Konfigurasi Otomatis</div>
+        <div class="fr"><div class="fg"><label>Jam Mulai</label><input type="time" id="jmulai" value="07:00"></div></div>
+        <div class="fr c2">
+          <div class="fg"><label>Durasi JP (menit)</label><input type="number" id="jdur" value="45" min="30" max="60"></div>
+          <div class="fg"><label>Jumlah JP/Hari</label><input type="number" id="jjml" value="10" min="6" max="14"></div>
+        </div>
+        <div class="fr c2">
+          <div class="fg"><label>Istirahat setelah jam</label><input id="jist" value="4,7" placeholder="4,7"></div>
+          <div class="fg"><label>Durasi Istirahat (menit)</label><input type="number" id="jduri" value="15"></div>
+        </div>
+        <button class="btn bsky bsm" onclick="genJamOto()">⚡ Terapkan</button>
+      </div>
+    </div>
+  </div>
+  <!-- S7 -->
+  <div id="sp7" style="display:none;">
+    <div class="shdr"><div class="stitle"><div class="acc"></div><h2>Assign Mapel ke Kelas</h2><p>Tentukan jam/minggu dan pola blok pertemuan</p></div></div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="fr c3">
+        <div class="fg"><label>Pilih Kelas</label><select id="asKelas" onchange="rAssign()"><option value="">-- Pilih Kelas --</option></select></div>
+        <div class="fg"><label>Total Jam/Minggu Tersetting</label>
+          <div style="padding:8px 12px;background:var(--panel2);border:1px solid var(--bdr);border-radius:var(--rs);font-family:'JetBrains Mono',monospace;font-size:13px;" id="asTotalJam">—</div>
+        </div>
+        <div class="fg"><label>Aksi</label>
+          <div style="display:flex;gap:6px;">
+            <button class="btn bsuccess bsm" onclick="om('mCopyAssign');fillCopyFrom()">📋 Salin dari Kelas Lain</button>
+            <button class="btn bsky bsm" onclick="om('mAssign')">+ Assign Mapel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="assignTable"></div>
+  </div>`;
+}
+
+function goStep(n){
+  curStep=n;buildWizard();
+  document.querySelectorAll('[id^="sp"]').forEach(p=>p.style.display='none');
+  document.getElementById('sp'+n).style.display='block';
+  if(n===2)rJurusan();
+  if(n===3)rKelas();
+  if(n===4)rMapel();
+  if(n===5){rGuru();fillGMapelFilter();}
+  if(n===6)rJamList();
+  if(n===7){fillAsKelas();rAssign();}
+}
+
+// ================ STEP 1: INFO ================
+function saveInfo(){
+  DB.info={
+    nama:v('s_nm'),npsn:v('s_npsn'),kepsek:v('s_ks'),
+    tp:v('s_tp'),sem:v('s_sm'),alamat:v('s_alm'),
+    hari:v('s_hr'),kur:v('s_kur')
+  };
+  save();toast('Info sekolah tersimpan!');goStep(2);
+}
+
+// ================ STEP 2: JURUSAN ================
+function saveJurusan(){
+  const kode=v('j_kode').trim(),nama=v('j_nama').trim();
+  if(!kode||!nama){toast('Isi kode dan nama!','','err');return;}
+  DB.jurusan.push({id:'j'+Date.now(),kode,nama,nl:v('j_nl'),bid:v('j_bid'),rombel:+v('j_rombel')||1,color:cpSel.J});
+  save();cm('mJurusan');rJurusan();toast(`Jurusan ${nama} ditambahkan!`);
+  ['j_kode','j_nama','j_nl','j_bid'].forEach(id=>document.getElementById(id).value='');
+}
+function rJurusan(){
+  const g=document.getElementById('jurusanGrid');
+  if(!DB.jurusan.length){g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);"><div style="font-size:44px;margin-bottom:10px;">🏫</div><p>Belum ada jurusan</p></div>`;return;}
+  g.innerHTML=DB.jurusan.map(j=>`
+    <div class="jcard" style="border-left:4px solid ${j.color};">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span class="bdg bsky2" style="background:${j.color}22;color:${j.color};">${j.kode}</span>
+        <button class="btn bdanger bxs" onclick="delJ('${j.id}')">✕</button>
+      </div>
+      <div style="font-size:14px;font-weight:800;margin-bottom:3px;">${j.nama}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">${j.nl||j.nama}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag">${j.bid||'—'}</span>
+        <span class="tag">👥 ${j.rombel} Rombel/Tingkat</span>
+      </div>
+    </div>`).join('');
+}
+function delJ(id){if(!confirm('Hapus jurusan?'))return;DB.jurusan=DB.jurusan.filter(j=>j.id!==id);save();rJurusan();}
+
+// ================ STEP 3: KELAS ================
+function fillKJurusan(){const s=document.getElementById('k_j');s.innerHTML='<option value="">-- Pilih --</option>';DB.jurusan.forEach(j=>s.innerHTML+=`<option value="${j.id}">${j.kode} - ${j.nama}</option>`);}
+function fillKWali(){const s=document.getElementById('k_w');s.innerHTML='<option value="">-- Pilih --</option>';DB.guru.forEach(g=>s.innerHTML+=`<option value="${g.id}">${g.nama}</option>`);}
+function updKNm(){
+  const t=v('k_t'),jId=v('k_j'),r=v('k_r');
+  const j=DB.jurusan.find(x=>x.id===jId);
+  if(j)document.getElementById('k_nm').value=`${t} ${j.kode} ${r}`;
+}
+['k_t','k_j','k_r'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',updKNm);});
+function saveKelas(){
+  const jId=v('k_j'),nm=v('k_nm').trim();
+  if(!nm||!jId){toast('Pilih jurusan!','','err');return;}
+  const j=DB.jurusan.find(x=>x.id===jId);
+  DB.kelas.push({id:'k'+Date.now(),nama:nm,tingkat:v('k_t'),jId,jKode:j?j.kode:'',rombel:v('k_r'),waliId:v('k_w'),ruangan:v('k_ru')});
+  save();cm('mKelas');rKelas();toast(`Kelas ${nm} ditambahkan!`);
+}
+function genKelas(){
+  if(!DB.jurusan.length){toast('Tambah jurusan dulu!','','err');return;}
+  let added=0;
+  ['X','XI','XII'].forEach(t=>{
+    DB.jurusan.forEach(j=>{
+      for(let r=1;r<=j.rombel;r++){
+        const nm=`${t} ${j.kode} ${r}`;
+        if(!DB.kelas.find(k=>k.nama===nm)){
+          DB.kelas.push({id:'k'+Date.now()+Math.random().toString(36).slice(2),nama:nm,tingkat:t,jId:j.id,jKode:j.kode,rombel:''+r,waliId:'',ruangan:''});
+          added++;
+        }
+      }
+    });
+  });
+  save();rKelas();toast(`${added} kelas di-generate!`,`Total: ${DB.kelas.length} kelas`);
+}
+function rKelas(){
+  const q=v('skQ').toLowerCase(),ft=v('skT'),fj=v('skJ');
+  const fjEl=document.getElementById('skJ');
+  const cur=fjEl.value;fjEl.innerHTML='<option value="">Semua</option>';
+  DB.jurusan.forEach(j=>fjEl.innerHTML+=`<option value="${j.id}">${j.kode}</option>`);fjEl.value=cur;
+  const data=DB.kelas.filter(k=>(!q||k.nama.toLowerCase().includes(q))&&(!ft||k.tingkat===ft)&&(!fj||k.jId===fj));
+  const tb=document.getElementById('kelasTb');
+  if(!data.length){tb.innerHTML='<tr class="erow"><td colspan="7">Tidak ada kelas</td></tr>';return;}
+  tb.innerHTML=data.map((k,i)=>{
+    const j=DB.jurusan.find(x=>x.id===k.jId),w=DB.guru.find(x=>x.id===k.waliId);
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);">${i+1}</td>
+      <td style="font-weight:700;">${k.nama}</td>
+      <td><span class="bdg bind2">${k.tingkat}</span></td>
+      <td>${j?`<span class="bdg" style="background:${j.color}22;color:${j.color};">${j.kode}</span>`:'—'}</td>
+      <td style="font-size:11px;">${w?w.nama:'—'}</td>
+      <td style="font-size:11px;">${k.ruangan||'—'}</td>
+      <td><button class="btn bdanger bxs" onclick="delK('${k.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+function delK(id){if(!confirm('Hapus kelas ini?'))return;DB.kelas=DB.kelas.filter(k=>k.id!==id);delete DB.assign[id];delete DB.jadwal[id];save();rKelas();}
+
+// ================ STEP 4: MAPEL ================
+const DEFMAPEL=[
+  {kode:'PAI',nama:'Pendidikan Agama & Budi Pekerti',kel:'Umum',color:'#f59e0b'},
+  {kode:'PPKn',nama:'Pendidikan Pancasila & Kewarganegaraan',kel:'Umum',color:'#f43f5e'},
+  {kode:'B.IND',nama:'Bahasa Indonesia',kel:'Umum',color:'#3b82f6'},
+  {kode:'SEJAR',nama:'Sejarah Indonesia',kel:'Umum',color:'#8b5cf6'},
+  {kode:'B.ING',nama:'Bahasa Inggris',kel:'Adaptif',color:'#06b6d4'},
+  {kode:'MTK',nama:'Matematika',kel:'Adaptif',color:'#10b981'},
+  {kode:'IPA',nama:'Ilmu Pengetahuan Alam',kel:'Adaptif',color:'#0ea5e9'},
+  {kode:'PJOK',nama:'Pendidikan Jasmani Olahraga & Kesehatan',kel:'Umum',color:'#f97316'},
+  {kode:'SENBUD',nama:'Seni Budaya',kel:'Umum',color:'#ec4899'},
+  {kode:'SIMDIG',nama:'Simulasi & Komunikasi Digital',kel:'Adaptif',color:'#38bdf8'},
+  {kode:'EKON',nama:'Ekonomi',kel:'Adaptif',color:'#84cc16'},
+  {kode:'PKK',nama:'Produk Kreatif & Kewirausahaan',kel:'Produktif',color:'#a855f7'},
+  {kode:'MULOK',nama:'Muatan Lokal',kel:'Mulok',color:'#64748b'},
+  {kode:'BK',nama:'Bimbingan Konseling',kel:'Pengembangan',color:'#475569'},
+];
+function importDefaultMapel(){
+  let n=0;
+  DEFMAPEL.forEach(m=>{
+    if(!DB.mapel.find(x=>x.kode===m.kode)){
+      DB.mapel.push({id:'m'+Date.now()+Math.random().toString(36).slice(2),...m,jId:'',kkm:75});n++;
+    }
+  });
+  save();rMapel();toast(`${n} mapel diimport!`,'Tambah mapel produktif manual');
+}
+function fillMJurusan(){const s=document.getElementById('m_jur');s.innerHTML='<option value="">Semua Jurusan</option>';DB.jurusan.forEach(j=>s.innerHTML+=`<option value="${j.id}">${j.kode} - ${j.nama}</option>`);}
+function saveMapel(){
+  const kode=v('m_kode').trim(),nama=v('m_nama').trim();
+  if(!kode||!nama){toast('Isi kode dan nama!','','err');return;}
+  DB.mapel.push({id:'m'+Date.now(),kode,nama,kel:v('m_kel'),jId:v('m_jur'),kkm:+v('m_kkm')||75,color:cpSel.M});
+  save();cm('mMapel');rMapel();toast(`${nama} ditambahkan!`);
+  ['m_kode','m_nama'].forEach(id=>document.getElementById(id).value='');
+}
+function rMapel(){
+  const q=v('smQ').toLowerCase(),fk=v('smK');
+  const data=DB.mapel.filter(m=>(!q||m.nama.toLowerCase().includes(q)||m.kode.toLowerCase().includes(q))&&(!fk||m.kel===fk));
+  const tb=document.getElementById('mapelTb');
+  if(!data.length){tb.innerHTML='<tr class="erow"><td colspan="7">Tidak ada mapel</td></tr>';return;}
+  const klC={'Umum':'bsky2','Adaptif':'bind2','Produktif':'bvio2','Mulok':'bamber2','Pengembangan':'bem2'};
+  tb.innerHTML=data.map((m,i)=>{
+    const j=DB.jurusan.find(x=>x.id===m.jId);
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);">${i+1}</td>
+      <td><span class="bdg bsky2" style="background:${m.color}22;color:${m.color};font-family:'JetBrains Mono',monospace;">${m.kode}</span></td>
+      <td style="font-weight:600;">${m.nama}</td>
+      <td><span class="bdg ${klC[m.kel]||'bsky2'}">${m.kel}</span></td>
+      <td style="font-size:11px;">${j?j.kode:'Semua'}</td>
+      <td><div style="width:18px;height:18px;border-radius:4px;background:${m.color};"></div></td>
+      <td><button class="btn bdanger bxs" onclick="delM('${m.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+function delM(id){if(!confirm('Hapus mapel?'))return;DB.mapel=DB.mapel.filter(m=>m.id!==id);save();rMapel();}
+
+// ================ STEP 5: GURU ================
+function fillGMapelChk(){
+  document.getElementById('gMapelChk').innerHTML=DB.mapel.map(m=>`
+    <label style="display:flex;align-items:center;gap:5px;padding:4px 8px;background:var(--panel3);border-radius:5px;cursor:pointer;font-size:11px;">
+      <input type="checkbox" name="gmc" value="${m.id}" style="width:auto;accent-color:var(--sky);">
+      <span style="width:7px;height:7px;border-radius:2px;background:${m.color};"></span>${m.kode}
+    </label>`).join('');
+}
+function fillGMapelFilter(){
+  const s=document.getElementById('sgM');s.innerHTML='<option value="">Semua</option>';
+  DB.mapel.forEach(m=>s.innerHTML+=`<option value="${m.id}">${m.kode} - ${m.nama}</option>`);
+}
+function saveGuru(){
+  const nama=v('g_nama').trim();if(!nama){toast('Nama wajib diisi!','','err');return;}
+  const mapelIds=[...document.querySelectorAll('input[name="gmc"]:checked')].map(x=>x.value);
+  DB.guru.push({id:'g'+Date.now(),nip:v('g_nip'),nama,st:v('g_st'),mj:+v('g_mj')||24,hp:v('g_hp'),mapelIds});
+  save();cm('mGuru');rGuru();fillGMapelFilter();toast(`Guru ${nama} ditambahkan!`);
+}
+function guruJam(gId){
+  let t=0;
+  Object.values(DB.jadwal).forEach(kj=>{
+    Object.values(kj).forEach(hari=>{
+      hari.forEach(bl=>{if(bl.guruId===gId)t+=bl.span||1;});
+    });
+  });
+  return t;
+}
+function rGuru(){
+  const q=v('sgQ').toLowerCase(),fm=v('sgM');
+  const data=DB.guru.filter(g=>(!q||g.nama.toLowerCase().includes(q)||g.nip.includes(q))&&(!fm||g.mapelIds.includes(fm)));
+  const tb=document.getElementById('guruTb');
+  if(!data.length){tb.innerHTML='<tr class="erow"><td colspan="7">Belum ada guru</td></tr>';return;}
+  tb.innerHTML=data.map((g,i)=>{
+    const mapelT=g.mapelIds.map(id=>{const m=DB.mapel.find(x=>x.id===id);return m?`<span class="tag" style="font-size:9px;">${m.kode}</span>`:''}).join(' ');
+    const dj=guruJam(g.id);const pct=Math.min(100,Math.round(dj/g.mj*100));
+    return `<tr>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);">${i+1}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:10px;">${g.nip||'—'}</td>
+      <td style="font-weight:700;">${g.nama}<br><span class="bdg ${g.st==='PNS'?'bem2':g.st==='PPPK'?'bsky2':'bamber2'}" style="font-size:9px;margin-top:2px;">${g.st}</span></td>
+      <td style="max-width:180px;">${mapelT||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">${g.mj} jam</td>
+      <td>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${dj>g.mj?'var(--rose)':dj>=g.mj*.8?'var(--amber)':'var(--em)'};">${dj}/${g.mj}</div>
+        <div class="pbw" style="margin-top:3px;width:70px;"><div class="pb" style="width:${pct}%;background:${dj>g.mj?'var(--rose)':dj>=g.mj*.8?'var(--amber)':'linear-gradient(90deg,var(--sky),var(--ind))'}"></div></div>
+      </td>
+      <td><button class="btn bdanger bxs" onclick="delG('${g.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+function delG(id){if(!confirm('Hapus guru?'))return;DB.guru=DB.guru.filter(g=>g.id!==id);save();rGuru();}
+
+// ================ STEP 6: JAM ================
+function genJam(){
+  DB.jam=[
+    {no:1,s:'07.00',e:'07.45',t:'jp'},{no:2,s:'07.45',e:'08.30',t:'jp'},
+    {no:3,s:'08.30',e:'09.15',t:'jp'},{no:4,s:'09.15',e:'10.00',t:'jp'},
+    {no:'',s:'10.00',e:'10.15',t:'ist'},
+    {no:5,s:'10.15',e:'11.00',t:'jp'},{no:6,s:'11.00',e:'11.45',t:'jp'},
+    {no:7,s:'11.45',e:'12.30',t:'jp'},
+    {no:'',s:'12.30',e:'13.00',t:'ist'},
+    {no:8,s:'13.00',e:'13.45',t:'jp'},{no:9,s:'13.45',e:'14.30',t:'jp'},
+    {no:10,s:'14.30',e:'15.15',t:'jp'},
+  ];
+  save();rJamList();toast('Jam default (10 JP + 2 Istirahat) diterapkan!');
+}
+function genJamOto(){
+  const mulai=v('jmulai'),dur=+v('jdur')||45,jml=+v('jjml')||10;
+  const ists=v('jist').split(',').map(x=>+x.trim()).filter(Boolean);
+  const duri=+v('jduri')||15;
+  DB.jam=[];
+  let [h,m]=mulai.split(':').map(Number),jpNo=1;
+  for(let i=1;i<=jml;i++){
+    const th=Math.floor((h*60+m+dur)/60),tm=(h*60+m+dur)%60;
+    DB.jam.push({no:jpNo,s:`${pad(h)}.${pad(m)}`,e:`${pad(th)}.${pad(tm)}`,t:'jp'});
+    jpNo++;h=th;m=tm;
+    if(ists.includes(i)){
+      const ih=Math.floor((h*60+m+duri)/60),im=(h*60+m+duri)%60;
+      DB.jam.push({no:'',s:`${pad(h)}.${pad(m)}`,e:`${pad(ih)}.${pad(im)}`,t:'ist'});
+      h=ih;m=im;
+    }
+  }
+  save();rJamList();toast(`${jml} JP + ${ists.length} Istirahat dibuat!`);
+}
+function saveJam(){
+  DB.jam.push({no:+v('jm_no'),s:v('jm_s').replace(':','.'),e:v('jm_e').replace(':','.'),t:v('jm_t')});
+  DB.jam.sort((a,b)=>a.s>b.s?1:-1);save();cm('mJam');rJamList();
+}
+function rJamList(){
+  const el=document.getElementById('jamList');
+  if(!DB.jam.length){el.innerHTML='<div class="card"><div style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Belum ada jam. Klik Generate Default.</div></div>';return;}
+  el.innerHTML=DB.jam.map((j,i)=>`
+    <div class="jrow ${j.t==='ist'?'ist':''}">
+      <div class="jnum">${j.t==='ist'?'☕':j.no}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);width:110px;">${j.s} – ${j.e}</div>
+      <div style="flex:1;">${j.t==='ist'?`<span class="bdg bamber2">Istirahat</span>`:`<span class="bdg bsky2">Jam Ke-${j.no}</span>`}</div>
+      <button class="btn bdanger bxs" onclick="DB.jam.splice(${i},1);save();rJamList()">✕</button>
+    </div>`).join('');
+}
+function pad(n){return String(n).padStart(2,'0');}
+
+// ================ STEP 7: ASSIGN ================
+function fillAsKelas(){
+  const s=document.getElementById('asKelas');const cur=s.value;
+  s.innerHTML='<option value="">-- Pilih Kelas --</option>';
+  const ts=[...new Set(DB.kelas.map(k=>k.tingkat))].sort();
+  ts.forEach(t=>{
+    const og=document.createElement('optgroup');og.label='Kelas '+t;
+    DB.kelas.filter(k=>k.tingkat===t).forEach(k=>{const o=document.createElement('option');o.value=k.id;o.textContent=k.nama;og.appendChild(o);});
+    s.appendChild(og);
+  });
+  if(cur)s.value=cur;
+}
+function fillAsMapel(){
+  const s=document.getElementById('as_m');s.innerHTML='<option value="">-- Pilih Mapel --</option>';
+  DB.mapel.forEach(m=>s.innerHTML+=`<option value="${m.id}">[${m.kode}] ${m.nama}</option>`);
+}
+function fillAsGuru(){
+  const s=document.getElementById('as_g');s.innerHTML='<option value="">-- Pilih Guru --</option>';
+  DB.guru.forEach(g=>s.innerHTML+=`<option value="${g.id}">${g.nama}</option>`);
+}
+function buildAsSpan(){
+  const j=+v('as_j')||2;asSpan=1;
+  const el=document.getElementById('asSpanSel');
+  el.innerHTML='';
+  for(let i=1;i<=Math.min(j,10);i++){
+    const b=document.createElement('button');b.className='span-btn'+(i===1?' sel':'');
+    b.textContent=i+'JP';b.onclick=()=>{
+      el.querySelectorAll('.span-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');asSpan=i;
+      const perMinggu=Math.floor(j/i);const sisa=j%i;
+      document.getElementById('asSpanInfo').textContent=`${perMinggu} pertemuan/minggu × ${i} JP + ${sisa>0?sisa+' JP ekstra':''}`;
+    };
+    el.appendChild(b);
+  }
+  document.getElementById('asSpanInfo').textContent=`${j} pertemuan/minggu × 1 JP`;
+}
+document.getElementById('as_j').addEventListener('input',buildAsSpan);
+
+function saveAssign(){
+  const kId=v('asKelas'),mId=v('as_m'),gId=v('as_g'),jam=+v('as_j')||2;
+  if(!kId||!mId){toast('Pilih kelas dan mapel!','','err');return;}
+  if(!DB.assign[kId])DB.assign[kId]=[];
+  if(DB.assign[kId].find(x=>x.mapelId===mId)){toast('Mapel sudah di-assign!','','warn');return;}
+  DB.assign[kId].push({mapelId:mId,guruId:gId,jamPerMinggu:jam,spanJam:asSpan});
+  save();cm('mAssign');rAssign();
+  const m=DB.mapel.find(x=>x.id===mId);
+  toast(`${m?m.nama:'Mapel'} di-assign!`,`${jam} jam/minggu, ${asSpan} JP/pertemuan`);
+}
+function rAssign(){
+  const kId=v('asKelas');
+  if(!kId){document.getElementById('assignTable').innerHTML='<div style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Pilih kelas terlebih dahulu</div>';document.getElementById('asTotalJam').textContent='—';return;}
+  const ass=DB.assign[kId]||[];
+  const tot=ass.reduce((s,a)=>s+a.jamPerMinggu,0);
+  document.getElementById('asTotalJam').textContent=tot+' jam/minggu';
+  if(!ass.length){document.getElementById('assignTable').innerHTML='<div style="text-align:center;color:var(--text3);padding:30px;font-size:12px;">Belum ada mapel di-assign ke kelas ini.</div>';return;}
+  document.getElementById('assignTable').innerHTML=`
+    <table class="dtbl">
+      <thead><tr><th>#</th><th>Mapel</th><th>Guru</th><th>Jam/Minggu</th><th>JP/Pertemuan</th><th>Pertemuan/Minggu</th><th>Aksi</th></tr></thead>
+      <tbody>${ass.map((a,i)=>{
+        const m=DB.mapel.find(x=>x.id===a.mapelId),g=DB.guru.find(x=>x.id===a.guruId);
+        const perm=Math.ceil(a.jamPerMinggu/a.spanJam);
+        return `<tr>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);">${i+1}</td>
+          <td>${m?`<div style="display:flex;align-items:center;gap:7px;"><div style="width:10px;height:10px;border-radius:3px;background:${m.color};flex-shrink:0;"></div><span style="font-weight:700;">${m.nama}</span></div>`:'—'}</td>
+          <td style="font-size:12px;">${g?g.nama:'—'}</td>
+          <td>
+            <input type="number" value="${a.jamPerMinggu}" min="1" max="30" style="width:55px;padding:3px 7px;font-size:12px;"
+              onchange="updAss('${kId}','${a.mapelId}','jam',this.value)">
+          </td>
+          <td>
+            <input type="number" value="${a.spanJam}" min="1" max="${a.jamPerMinggu}" style="width:55px;padding:3px 7px;font-size:12px;"
+              onchange="updAss('${kId}','${a.mapelId}','span',this.value)">
+          </td>
+          <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sky);">${perm}×</td>
+          <td><button class="btn bdanger bxs" onclick="delAss('${kId}','${a.mapelId}')">✕</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+function updAss(kId,mId,field,val){
+  const a=DB.assign[kId]?.find(x=>x.mapelId===mId);
+  if(!a)return;
+  if(field==='jam')a.jamPerMinggu=+val||1;
+  if(field==='span'){a.spanJam=Math.min(+val||1,a.jamPerMinggu);}
+  save();rAssign();
+}
+function delAss(kId,mId){DB.assign[kId]=DB.assign[kId].filter(x=>x.mapelId!==mId);save();rAssign();}
+function fillCopyFrom(){
+  const kId=v('asKelas');
+  const s=document.getElementById('copyFrom');s.innerHTML='<option value="">-- Pilih --</option>';
+  DB.kelas.filter(k=>k.id!==kId).forEach(k=>s.innerHTML+=`<option value="${k.id}">${k.nama}</option>`);
+}
+function doCopy(){
+  const to=v('asKelas'),from=v('copyFrom');
+  if(!from||!to){toast('Pilih kelas!','','err');return;}
+  DB.assign[to]=JSON.parse(JSON.stringify(DB.assign[from]||[]));
+  save();cm('mCopyAssign');rAssign();toast('Assign berhasil disalin!');
+}
+
+// ================ TIMETABLE (MERGED CELLS + DRAG) ================
+const HARIS=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+let dragData=null;
+
+function getHaris(){return HARIS.slice(0,+DB.info.hari||6);}
+function getJP(){return DB.jam.filter(j=>j.t==='jp');}
+
+function fillTTKelas(){
+  const s=document.getElementById('ttKelas');const cur=s.value;
+  s.innerHTML='<option value="">-- Pilih Kelas --</option>';
+  const ts=[...new Set(DB.kelas.map(k=>k.tingkat))].sort();
+  ts.forEach(t=>{
+    const og=document.createElement('optgroup');og.label='Kelas '+t;
+    DB.kelas.filter(k=>k.tingkat===t).forEach(k=>{const o=document.createElement('option');o.value=k.id;o.textContent=k.nama;og.appendChild(o);});
+    s.appendChild(og);
+  });
+  if(cur)s.value=cur;
+}
+
+function renderTT(){
+  const kId=v('ttKelas');
+  const outer=document.getElementById('ttOuter');
+  if(!kId){
+    outer.innerHTML='<div style="padding:60px;text-align:center;color:var(--text3);"><div style="font-size:48px;margin-bottom:10px;">📅</div><p>Pilih kelas terlebih dahulu</p></div>';
+    document.getElementById('ttProgress').innerHTML='';
+    document.getElementById('ttbadge').innerHTML='';
+    document.getElementById('ttLegend').innerHTML='';
+    return;
+  }
+  const kelas=DB.kelas.find(k=>k.id===kId);
+  const haris=getHaris();
+  const allJam=DB.jam;
+  const assigns=DB.assign[kId]||[];
+  const jadwalK=DB.jadwal[kId]||{};
+
+  // Progress
+  const totalNeeded=assigns.reduce((s,a)=>s+a.jamPerMinggu,0);
+  let filled=0;
+  Object.values(jadwalK).forEach(arr=>arr.forEach(b=>filled+=b.span||1));
+  const pct=totalNeeded?Math.min(100,Math.round(filled/totalNeeded*100)):0;
+  document.getElementById('ttProgress').innerHTML=`
+    <div class="pbar-row">
+      <div style="font-size:11px;color:var(--text3);">📊 Progress</div>
+      <div style="font-size:13px;font-weight:700;">${filled} <span style="color:var(--text3);">/ ${totalNeeded} jam</span></div>
+      <div class="pbw" style="flex:1;min-width:150px;"><div class="pb" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:${pct>=100?'var(--em)':'var(--amber)'};">${pct>=100?'✅ Lengkap':'⚠ '+pct+'%'}</div>
+    </div>`;
+
+  document.getElementById('ttbadge').innerHTML=`
+    <span class="bdg bsky2">📚 ${assigns.length} Mapel</span>
+    <span class="bdg bamber2">⏰ ${totalNeeded} Jam/Minggu</span>
+    <span class="bdg bind2">📅 ${haris.length} Hari/Minggu</span>
+    <span class="bdg bem2">✅ ${filled} Terjadwal</span>`;
+
+  // Legend
+  document.getElementById('ttLegend').innerHTML=assigns.map(a=>{
+    const m=DB.mapel.find(x=>x.id===a.mapelId);
+    if(!m)return '';
+    const cnt=Object.values(jadwalK).reduce((s,arr)=>s+arr.filter(b=>b.mapelId===m.id).length,0);
+    return `<div class="tag" style="font-size:10px;">
+      <div style="width:8px;height:8px;border-radius:2px;background:${m.color};"></div>
+      ${m.kode} (${cnt}/${a.jamPerMinggu})
+    </div>`;
+  }).join('');
+
+  // Build HTML table
+  // Use HTML table with rowspan for merged cells
+  // For each cell, check if a block starts here and how many rows it spans
+
+  // Build jadwal lookup: jadwalK[hari] = [{jamIdx, mapelId, guruId, room, span}]
+  // We need to know for each (hari, jamIdx) whether it's occupied by a block (and if so, if it's start or continuation)
+
+  let html=`<div class="tt-grid-wrap"><table class="tt-grid" id="ttTable" style="border-collapse:separate;border-spacing:3px;width:100%;min-width:900px;">`;
+  // Header
+  html+=`<thead><tr>
+    <th style="width:82px;background:transparent;"></th>
+    ${haris.map(h=>`<th style="background:var(--panel2);border-radius:6px;padding:10px 6px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;">${h}</th>`).join('')}
+  </tr></thead><tbody>`;
+
+  // For each jam row
+  allJam.forEach((jam,ji)=>{
+    if(jam.t==='ist'){
+      html+=`<tr>
+        <td style="text-align:center;vertical-align:middle;padding:4px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--amber);">${jam.s}–${jam.e}</div>
+        </td>
+        ${haris.map(h=>`<td style="padding:2px;">
+          <div style="background:rgba(245,158,11,.05);border-radius:6px;height:28px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--amber);letter-spacing:1.5px;border:1px solid rgba(245,158,11,.12);">☕ ISTIRAHAT</div>
+        </td>`).join('')}
+      </tr>`;
+      return;
+    }
+
+    html+=`<tr>`;
+    // Time cell
+    html+=`<td style="text-align:center;vertical-align:middle;padding:4px;min-width:82px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:1.7;">Jam ${jam.no}<br>${jam.s}–${jam.e}</div>
+    </td>`;
+
+    haris.forEach(hari=>{
+      // Check if a block starts at this (hari, ji)
+      const arr=jadwalK[hari]||[];
+      const block=arr.find(b=>b.jamIdx===ji);
+
+      // Check if this cell is "covered" by a block starting earlier
+      const covered=arr.find(b=>b.jamIdx<ji && b.jamIdx+b.span>ji);
+
+      if(covered){
+        // Skip this td (rowspan handles it)
+        return;
+      }
+
+      if(block){
+        const m=DB.mapel.find(x=>x.id===block.mapelId);
+        const g=DB.guru.find(x=>x.id===block.guruId);
+        const col=m?m.color:'#64748b';
+        const spanCount=block.span||1;
+        const cellH=(66*spanCount)+(3*(spanCount-1));
+        html+=`<td rowspan="${spanCount}" style="padding:2px;vertical-align:top;">
+          <div class="tt-block" id="blk-${kId}-${hari}-${ji}"
+            style="background:${col}33;border-left-color:${col};height:${cellH}px;"
+            draggable="true"
+            ondragstart="onDragStart(event,'${kId}','${hari}',${ji})"
+            ondragend="onDragEnd(event)"
+            onclick="editBlock('${kId}','${hari}',${ji})">
+            <div>
+              <div class="blk-name">${m?m.kode:''} ${m?m.nama:'?'}</div>
+              <div class="blk-teacher">👤 ${g?g.nama:'—'}</div>
+              <div class="blk-room">🏠 ${block.room||'—'}</div>
+            </div>
+            ${spanCount>1?`<div class="blk-span">${spanCount}JP</div>`:''}
+            <button class="blk-del" onclick="delBlock('${kId}','${hari}',${ji},event)">✕</button>
+            <div class="blk-resize" title="Drag untuk ubah span" onmousedown="startResize(event,'${kId}','${hari}',${ji})"></div>
+          </div>
+        </td>`;
+      } else {
+        html+=`<td style="padding:2px;height:66px;background:var(--panel2);border-radius:6px;cursor:pointer;position:relative;"
+          ondragover="event.preventDefault();this.style.background='rgba(56,189,248,.12)'"
+          ondragleave="this.style.background=''"
+          ondrop="onDrop(event,'${kId}','${hari}',${ji})"
+          onclick="openSlotModal('${kId}','${hari}',${ji})">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text3);opacity:0;transition:opacity .15s;" class="slot-hint">+</div>
+        </td>`;
+      }
+    });
+    html+=`</tr>`;
+  });
+
+  html+=`</tbody></table></div>`;
+  outer.innerHTML=html;
+
+  // Add hover effects for empty cells
+  outer.querySelectorAll('td[onclick^="openSlotModal"]').forEach(td=>{
+    td.addEventListener('mouseenter',()=>td.querySelector('.slot-hint').style.opacity='0.5');
+    td.addEventListener('mouseleave',()=>td.querySelector('.slot-hint').style.opacity='0');
+  });
+}
+
+// ===== DRAG & DROP =====
+function onDragStart(e,kId,hari,ji){
+  dragData={kId,hari,ji};
+  e.target.querySelector('.tt-block')?.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function onDragEnd(e){
+  document.querySelectorAll('.tt-block').forEach(b=>b.classList.remove('dragging'));
+  dragData=null;
+}
+function onDrop(e,kId,toHari,toJi){
+  e.preventDefault();
+  e.currentTarget.style.background='';
+  if(!dragData)return;
+  const {kId:fkId,hari:fHari,ji:fJi}=dragData;
+  if(fkId!==kId){toast('Tidak bisa pindah antar kelas!','','warn');return;}
+  if(fHari===toHari&&fJi===toJi)return;
+
+  const arr=DB.jadwal[kId]?.[fHari]||[];
+  const blockIdx=arr.findIndex(b=>b.jamIdx===fJi);
+  if(blockIdx<0)return;
+  const block={...arr[blockIdx]};
+  const span=block.span||1;
+
+  // Check target has enough consecutive free slots
+  const jp=DB.jam;
+  let jpIdx=0,cnt=0;
+  for(let i=0;i<jp.length;i++){if(jp[i].t==='jp'&&i>=toJi){if(cnt===0)jpIdx=i;cnt++;if(cnt>=span)break;}else if(jp[i].t==='ist'&&cnt>0){cnt=0;}}
+
+  // Check no conflict at destination
+  const destArr=DB.jadwal[kId]?.[toHari]||[];
+  for(let s=0;s<span;s++){
+    const targetJi=toJi+s+(s>0?0:0);// simplified: just check toJi to toJi+span-1
+    // find actual jam indices
+  }
+
+  // Move block
+  arr.splice(blockIdx,1);
+  if(!DB.jadwal[kId][toHari])DB.jadwal[kId][toHari]=[];
+  DB.jadwal[kId][toHari].push({...block,jamIdx:toJi});
+  save();renderTT();
+  toast('Jadwal dipindahkan!');
+}
+
+// ===== RESIZE (extend span) =====
+let resizeData=null;
+function startResize(e,kId,hari,ji){
+  e.stopPropagation();e.preventDefault();
+  resizeData={kId,hari,ji,startY:e.clientY};
+  document.addEventListener('mousemove',doResize);
+  document.addEventListener('mouseup',endResize);
+}
+function doResize(e){
+  if(!resizeData)return;
+  const dy=e.clientY-resizeData.startY;
+  const newSpan=Math.max(1,Math.round(1+(dy/69)));
+  resizeData.newSpan=newSpan;
+}
+function endResize(e){
+  if(!resizeData)return;
+  const {kId,hari,ji,newSpan}=resizeData;
+  if(newSpan&&newSpan>1){
+    const arr=DB.jadwal[kId]?.[hari]||[];
+    const b=arr.find(x=>x.jamIdx===ji);
+    if(b){
+      b.span=newSpan;save();renderTT();
+      toast(`Span diubah menjadi ${newSpan} JP!`);
+    }
+  }
+  document.removeEventListener('mousemove',doResize);
+  document.removeEventListener('mouseup',endResize);
+  resizeData=null;
+}
+
+// ===== SLOT MODAL =====
+function buildSlotSpan(kId,hari,ji){
+  slotSpan=1;
+  const el=document.getElementById('slotSpanSel');el.innerHTML='';
+  const jp=DB.jam.filter((j,idx)=>j.t==='jp'&&idx>=ji);
+  const maxSpan=Math.min(jp.length,10);
+  for(let i=1;i<=maxSpan;i++){
+    const b=document.createElement('button');b.className='span-btn'+(i===1?' sel':'');
+    b.textContent=i+'JP';
+    const jam1=DB.jam[ji],jamN=DB.jam[ji+(i-1)];
+    b.title=jam1&&jamN?`${jam1.s} – ${jamN.e}`:'';
+    b.onclick=(()=>{
+      const n=i;
+      return ()=>{
+        el.querySelectorAll('.span-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');slotSpan=n;
+        const j1=DB.jam[ji],jn=DB.jam[ji+(n-1)];
+        document.getElementById('slotSpanNote').textContent=j1&&jn?`${j1.s} – ${jn?jn.e:'?'} (${n} JP sekaligus)`:'';
+      };
+    })();
+    el.appendChild(b);
+  }
+  const j1=DB.jam[ji];
+  document.getElementById('slotSpanNote').textContent=j1?`${j1.s} – ${j1.e} (1 JP)`:'';
+}
+
+function openSlotModal(kId,hari,ji){
+  pendSlot={kId,hari,ji};
+  const kelas=DB.kelas.find(k=>k.id===kId);
+  const jam=DB.jam[ji];
+  document.getElementById('mSlotTitle').textContent=`📅 Tambah Jadwal — ${kelas?kelas.nama:''}`;
+  document.getElementById('mSlotInfo').innerHTML=`<b>${hari}</b> &nbsp;•&nbsp; Jam ke-${jam?jam.no:'?'} (${jam?jam.s:''}–${jam?jam.e:''})`;
+  buildSlotSpan(kId,hari,ji);
+  // Fill mapel from assign
+  const assigns=DB.assign[kId]||[];
+  const jadwalK=DB.jadwal[kId]||{};
+  const ms=document.getElementById('sl_m');
+  ms.innerHTML='<option value="">-- Pilih Mapel --</option>';
+  assigns.forEach(a=>{
+    const m=DB.mapel.find(x=>x.id===a.mapelId);if(!m)return;
+    const done=Object.values(jadwalK).reduce((s,arr)=>s+arr.filter(b=>b.mapelId===m.id).reduce((ss,b)=>ss+(b.span||1),0),0);
+    const sisa=a.jamPerMinggu-done;
+    ms.innerHTML+=`<option value="${m.id}" data-guru="${a.guruId}" data-span="${a.spanJam}">${m.kode} - ${m.nama} (sisa ${sisa}JP)</option>`;
+  });
+  document.getElementById('sl_g').innerHTML='<option value="">-- Pilih Guru --</option>';
+  DB.guru.forEach(g=>document.getElementById('sl_g').innerHTML+=`<option value="${g.id}">${g.nama}</option>`);
+  document.getElementById('sl_r').value=kelas?kelas.ruangan||'':'';
+  document.getElementById('slotWarn').style.display='none';
+  om('mSlot');
+}
+function onSlotMapelChange(){
+  const mId=v('sl_m');
+  const opt=document.getElementById('sl_m').selectedOptions[0];
+  if(opt&&opt.dataset.guru)document.getElementById('sl_g').value=opt.dataset.guru;
+  if(opt&&opt.dataset.span){
+    // Auto select span
+    const sp=+opt.dataset.span||1;
+    slotSpan=sp;
+    document.querySelectorAll('#slotSpanSel .span-btn').forEach((b,i)=>{
+      b.classList.toggle('sel',i+1===sp);
+    });
+    if(pendSlot){
+      const j1=DB.jam[pendSlot.ji],jn=DB.jam[pendSlot.ji+(sp-1)];
+      document.getElementById('slotSpanNote').textContent=j1&&jn?`${j1.s} – ${jn.e} (${sp} JP sekaligus)`:'';
+    }
+  }
+  checkSlotKonflik();
+}
+function checkSlotKonflik(){
+  const gId=v('sl_g');const warn=document.getElementById('slotWarn');
+  if(!gId||!pendSlot){warn.style.display='none';return;}
+  const {kId,hari,ji}=pendSlot;
+  let conflict=null;
+  Object.entries(DB.jadwal).forEach(([kid,kj])=>{
+    if(kid===kId)return;
+    const arr=kj[hari]||[];
+    for(let s=0;s<slotSpan;s++){
+      if(arr.find(b=>b.guruId===gId&&b.jamIdx<=ji+s&&b.jamIdx+(b.span||1)>ji+s)){
+        const k=DB.kelas.find(x=>x.id===kid);conflict=k?k.nama:'kelas lain';break;
+      }
+    }
+  });
+  if(conflict){warn.style.display='block';warn.textContent=`⚠ Guru ini sudah mengajar di jam yang sama di kelas ${conflict}!`;}
+  else warn.style.display='none';
+}
+function saveSlot(){
+  const {kId,hari,ji}=pendSlot;
+  const mId=v('sl_m'),gId=v('sl_g'),room=v('sl_r');
+  if(!mId){toast('Pilih mata pelajaran!','','err');return;}
+  if(!DB.jadwal[kId])DB.jadwal[kId]={};
+  if(!DB.jadwal[kId][hari])DB.jadwal[kId][hari]=[];
+  // Remove any block at this position first
+  DB.jadwal[kId][hari]=DB.jadwal[kId][hari].filter(b=>b.jamIdx!==ji);
+  DB.jadwal[kId][hari].push({mapelId:mId,guruId:gId,room,span:slotSpan,jamIdx:ji});
+  save();cm('mSlot');renderTT();
+  const m=DB.mapel.find(x=>x.id===mId);
+  toast(`${m?m.nama:'Mapel'} dijadwalkan!`,`${slotSpan} JP sekaligus di ${hari}`);
+}
+function editBlock(kId,hari,ji){
+  openSlotModal(kId,hari,ji);
+  const block=(DB.jadwal[kId]?.[hari]||[]).find(b=>b.jamIdx===ji);
+  if(block){
+    setTimeout(()=>{
+      document.getElementById('sl_m').value=block.mapelId;
+      onSlotMapelChange();
+      document.getElementById('sl_g').value=block.guruId;
+      document.getElementById('sl_r').value=block.room||'';
+      slotSpan=block.span||1;
+      document.querySelectorAll('#slotSpanSel .span-btn').forEach((b,i)=>{b.classList.toggle('sel',i+1===slotSpan);});
+    },80);
+  }
+}
+function delBlock(kId,hari,ji,e){
+  e.stopPropagation();
+  if(!DB.jadwal[kId]?.[hari])return;
+  DB.jadwal[kId][hari]=DB.jadwal[kId][hari].filter(b=>b.jamIdx!==ji);
+  save();renderTT();toast('Jadwal dihapus');
+}
+
+// ===== AUTO FILL =====
+function autoFill(){
+  const kId=v('ttKelas');if(!kId){toast('Pilih kelas!','','err');return;}
+  const assigns=DB.assign[kId]||[];
+  if(!assigns.length){toast('Belum ada mapel di-assign!','','warn');return;}
+  if(!DB.jadwal[kId])DB.jadwal[kId]={};
+  const haris=getHaris();
+  const allJam=DB.jam;
+  let placed=0;
+  // Build queue of blocks to place
+  const queue=[];
+  assigns.forEach(a=>{
+    const done=Object.values(DB.jadwal[kId]).reduce((s,arr)=>s+arr.filter(b=>b.mapelId===a.mapelId).reduce((ss,b)=>ss+(b.span||1),0),0);
+    const remaining=a.jamPerMinggu-done;
+    let r=remaining;
+    while(r>0){const sp=Math.min(a.spanJam,r);queue.push({mapelId:a.mapelId,guruId:a.guruId,span:sp});r-=sp;}
+  });
+  queue.sort(()=>Math.random()-0.5);
+  // Place in grid
+  for(const item of queue){
+    let placed2=false;
+    for(const hari of haris){
+      if(placed2)break;
+      if(!DB.jadwal[kId][hari])DB.jadwal[kId][hari]=[];
+      const arr=DB.jadwal[kId][hari];
+      // Find consecutive free JP slots
+      for(let ji=0;ji<allJam.length;ji++){
+        if(allJam[ji].t==='ist')continue;
+        // Check if ji to ji+span-1 are all free JP and consecutive
+        let ok=true,actualJis=[];
+        let count=0,cur=ji;
+        while(count<item.span&&cur<allJam.length){
+          if(allJam[cur].t==='ist'){cur++;continue;}
+          if(arr.find(b=>b.jamIdx<=cur&&b.jamIdx+(b.span||1)>cur)){ok=false;break;}
+          actualJis.push(cur);count++;cur++;
+        }
+        if(!ok||actualJis.length<item.span)continue;
+        arr.push({mapelId:item.mapelId,guruId:item.guruId,room:'',span:item.span,jamIdx:ji});
+        placed++;placed2=true;break;
+      }
+    }
+  }
+  save();renderTT();toast(`Auto-fill selesai!`,`${placed} blok ditempatkan`);
+}
+
+// ===== CEK KONFLIK =====
+function cekKonflik(){
+  const kId=v('ttKelas');if(!kId)return;
+  const haris=getHaris();let cnt=0,msgs=[];
+  haris.forEach(hari=>{
+    DB.jam.forEach((_,ji)=>{
+      const guruInSlot={};
+      Object.entries(DB.jadwal).forEach(([kid,kj])=>{
+        const arr=kj[hari]||[];
+        arr.forEach(b=>{
+          if(b.jamIdx<=ji&&b.jamIdx+(b.span||1)>ji&&b.guruId){
+            if(guruInSlot[b.guruId]){
+              cnt++;const g=DB.guru.find(x=>x.id===b.guruId);const k=DB.kelas.find(x=>x.id===kid);
+              msgs.push(`${hari}: ${g?g.nama:'Guru'} di ${k?k.nama:''}`);
+            }
+            guruInSlot[b.guruId]=true;
+          }
+        });
+      });
+    });
+  });
+  if(!cnt)toast('Tidak ada konflik! ✅','Semua slot aman');
+  else toast(`${cnt} konflik terdeteksi!`,msgs.slice(0,2).join('; '),'warn');
+}
+function clearTTKelas(){
+  const kId=v('ttKelas');if(!kId)return;
+  if(!confirm('Hapus semua jadwal kelas ini?'))return;
+  DB.jadwal[kId]={};save();renderTT();toast('Jadwal kelas dihapus!');
+}
+
+// ================ DASHBOARD ================
+function rdash(){
+  const totalJam=Object.values(DB.jadwal).reduce((s,kj)=>s+Object.values(kj).reduce((ss,arr)=>ss+arr.reduce((sss,b)=>sss+(b.span||1),0),0),0);
+  // meta
+  document.getElementById('dmeta').innerHTML=`
+    <span class="tag">📚 ${DB.info.kur}</span>
+    <span class="tag">📅 ${DB.info.sem} ${DB.info.tp}</span>
+    <span class="tag">🏫 ${DB.kelas.length} Kelas</span>
+    <span class="tag">👨‍🏫 ${DB.guru.length} Guru</span>`;
+  // stats
+  document.getElementById('dstats').innerHTML=[
+    {ico:'🏫',n:DB.jurusan.length,l:'Jurusan',c:'--sc:var(--sky)'},
+    {ico:'📚',n:DB.kelas.length,l:'Kelas',c:'--sc:var(--ind)'},
+    {ico:'📖',n:DB.mapel.length,l:'Mata Pelajaran',c:'--sc:var(--vio)'},
+    {ico:'👨‍🏫',n:DB.guru.length,l:'Guru',c:'--sc:var(--em)'},
+    {ico:'📅',n:totalJam,l:'Jam Terjadwal',c:'--sc:var(--amber)'},
+    {ico:'⚠️',n:hitKonflik(),l:'Konflik',c:'--sc:var(--rose)'},
+    {ico:'⚡',n:DB.jam.filter(j=>j.t==='jp').length,l:'JP/Hari',c:'--sc:var(--cyan)'},
+    {ico:'✅',n:DB.kelas.length?Math.round(Object.keys(DB.jadwal).filter(k=>Object.keys(DB.jadwal[k]||{}).length>0).length/DB.kelas.length*100)+'%':'0%',l:'Kelas Aktif',c:'--sc:var(--em)'},
+  ].map(s=>`<div class="scard" style="${s.c}">
+    <div class="sico">${s.ico}</div>
+    <div class="snum">${s.n}</div>
+    <div class="slbl">${s.l}</div>
+  </div>`).join('');
+  // setup progress
+  const steps=[
+    {l:'Info Sekolah',ok:!!DB.info.nama,n:1},
+    {l:'Jurusan',ok:DB.jurusan.length>0,n:2},
+    {l:'Kelas',ok:DB.kelas.length>0,n:3},
+    {l:'Mata Pelajaran',ok:DB.mapel.length>0,n:4},
+    {l:'Guru',ok:DB.guru.length>0,n:5},
+    {l:'Jam Pelajaran',ok:DB.jam.length>0,n:6},
+    {l:'Assign Mapel',ok:Object.keys(DB.assign).length>0,n:7},
+  ];
+  const dp=Math.round(steps.filter(s=>s.ok).length/steps.length*100);
+  document.getElementById('dsetup').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px;"><span>${dp}% setup selesai</span><span>${steps.filter(s=>s.ok).length}/${steps.length}</span></div>
+    <div class="pbw" style="margin-bottom:14px;"><div class="pb" style="width:${dp}%"></div></div>
+    ${steps.map(s=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;" onclick="gp('setup');goStep(${s.n})">
+      <div style="font-size:14px;">${s.ok?'✅':'⭕'}</div>
+      <div style="font-size:12px;flex:1;${!s.ok?'font-weight:700;':''}">${s.n}. ${s.l}</div>
+      ${!s.ok?'<span style="font-size:10px;color:var(--sky);">Setup →</span>':''}
+    </div>`).join('')}`;
+  // jadwal progress
+  document.getElementById('djadwal').innerHTML=DB.kelas.length?DB.kelas.slice(0,12).map(k=>{
+    const ass=DB.assign[k.id]||[];const needed=ass.reduce((s,a)=>s+a.jamPerMinggu,0);
+    const filled=Object.values(DB.jadwal[k.id]||{}).reduce((s,arr)=>s+arr.reduce((ss,b)=>ss+(b.span||1),0),0);
+    const pct=needed?Math.min(100,Math.round(filled/needed*100)):0;
+    const j=DB.jurusan.find(x=>x.id===k.jId);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;cursor:pointer;" onclick="gp('jadwal');document.getElementById('ttKelas').value='${k.id}';renderTT();">
+      <div style="width:7px;height:7px;border-radius:2px;background:${j?j.color:'var(--sky)'};flex-shrink:0;"></div>
+      <div style="font-size:12px;font-weight:600;min-width:120px;">${k.nama}</div>
+      <div style="flex:1;"><div class="pbw" style="height:4px;"><div class="pb" style="width:${pct}%;height:100%;"></div></div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${pct>=100?'var(--em)':'var(--text3)'};">${filled}/${needed}</div>
+    </div>`;
+  }).join(''):'<div style="color:var(--text3);padding:20px;text-align:center;font-size:12px;">Belum ada kelas</div>';
+  // beban guru
+  document.getElementById('dbeban').innerHTML=DB.guru.length?DB.guru.map(g=>{
+    const dj=guruJam(g.id);const pct=Math.min(100,Math.round(dj/g.mj*100));
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+      <div style="font-size:12px;font-weight:600;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${g.nama}</div>
+      <div style="flex:1;"><div class="pbw" style="height:4px;"><div class="pb" style="width:${pct}%;background:${dj>g.mj?'var(--rose)':pct>=80?'var(--amber)':'linear-gradient(90deg,var(--sky),var(--ind))'}"></div></div></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${dj>g.mj?'var(--rose)':'var(--text3)'};">${dj}/${g.mj}</div>
+    </div>`;
+  }).join(''):'<div style="color:var(--text3);padding:20px;text-align:center;font-size:12px;">Belum ada guru</div>';
+  // konflik
+  const kc=hitKonflik();
+  document.getElementById('dkonflik').innerHTML=kc===0?
+    '<div style="text-align:center;padding:20px;color:var(--em);"><div style="font-size:32px;margin-bottom:8px;">✅</div><p style="font-size:12px;font-weight:700;">Tidak ada konflik</p></div>':
+    `<div style="text-align:center;padding:20px;color:var(--rose);"><div style="font-size:32px;margin-bottom:8px;">⚠️</div><p style="font-size:12px;font-weight:700;">${kc} konflik terdeteksi</p><button class="btn bdanger bsm" style="margin-top:10px;" onclick="gp('jadwal')">Periksa →</button></div>`;
+}
+function hitKonflik(){
+  let c=0;
+  getHaris().forEach(hari=>{
+    DB.jam.forEach((_,ji)=>{
+      const gMap={};
+      Object.values(DB.jadwal).forEach(kj=>{
+        (kj[hari]||[]).forEach(b=>{
+          if(b.jamIdx<=ji&&b.jamIdx+(b.span||1)>ji&&b.guruId){
+            if(gMap[b.guruId])c++;
+            gMap[b.guruId]=true;
+          }
+        });
+      });
+    });
+  });
+  return c;
+}
+
+// ================ REKAP ================
+function rrekap(){
+  const totalJam=Object.values(DB.jadwal).reduce((s,kj)=>s+Object.values(kj).reduce((ss,arr)=>ss+arr.reduce((sss,b)=>sss+(b.span||1),0),0),0);
+  document.getElementById('rstats').innerHTML=[
+    {ico:'🏫',n:DB.jurusan.length,l:'Jurusan',c:'--sc:var(--sky)'},
+    {ico:'📚',n:DB.kelas.length,l:'Total Kelas',c:'--sc:var(--ind)'},
+    {ico:'📖',n:DB.mapel.length,l:'Mata Pelajaran',c:'--sc:var(--vio)'},
+    {ico:'📅',n:totalJam,l:'Total Jam Dijadwal',c:'--sc:var(--em)'},
+  ].map(s=>`<div class="scard" style="${s.c}"><div class="sico">${s.ico}</div><div class="snum">${s.n}</div><div class="slbl">${s.l}</div></div>`).join('');
+
+  document.getElementById('rguruTb').innerHTML=!DB.guru.length?
+    '<tr class="erow"><td colspan="4">Belum ada guru</td></tr>':
+    DB.guru.map(g=>{
+      const dj=guruJam(g.id);
+      const st=dj>g.mj?'brose2':dj>=g.mj*.8?'bamber2':'bem2';
+      const sl=dj>g.mj?'Overload':dj>=g.mj*.8?'Penuh':'Normal';
+      return `<tr><td style="font-weight:600;">${g.nama}</td><td style="font-family:'JetBrains Mono',monospace;">${dj}</td><td style="font-family:'JetBrains Mono',monospace;">${g.mj}</td><td><span class="bdg ${st}">${sl}</span></td></tr>`;
+    }).join('');
+
+  document.getElementById('rkelengkapan').innerHTML=!DB.kelas.length?
+    '<div style="color:var(--text3);padding:20px;text-align:center;font-size:12px;">Belum ada kelas</div>':
+    DB.kelas.map(k=>{
+      const ass=DB.assign[k.id]||[];const needed=ass.reduce((s,a)=>s+a.jamPerMinggu,0);
+      const filled=Object.values(DB.jadwal[k.id]||{}).reduce((s,arr)=>s+arr.reduce((ss,b)=>ss+(b.span||1),0),0);
+      const pct=needed?Math.min(100,Math.round(filled/needed*100)):0;
+      const j=DB.jurusan.find(x=>x.id===k.jId);
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <div style="width:7px;height:7px;border-radius:2px;background:${j?j.color:'#64748b'};flex-shrink:0;"></div>
+        <div style="font-size:12px;font-weight:600;min-width:130px;">${k.nama}</div>
+        <div style="flex:1;"><div class="pbw" style="height:4px;"><div class="pb" style="width:${pct}%;height:100%;"></div></div></div>
+        <span class="bdg ${pct>=100?'bem2':pct>=50?'bamber2':'brose2'}">${pct}%</span>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);">${filled}/${needed}</div>
+      </div>`;
+    }).join('');
+
+  document.getElementById('rdetail').innerHTML=DB.kelas.map(k=>{
+    const j=DB.jurusan.find(x=>x.id===k.jId);
+    const ass=DB.assign[k.id]||[];
+    return `<div style="margin-bottom:14px;padding:14px;background:var(--panel2);border-radius:var(--rs);border:1px solid var(--bdr);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="width:4px;height:18px;border-radius:2px;background:${j?j.color:'#64748b'};"></div>
+        <div style="font-size:14px;font-weight:800;">${k.nama}</div>
+        <span class="bdg bind2">${k.tingkat}</span>
+        ${j?`<span class="bdg" style="background:${j.color}22;color:${j.color};">${j.kode}</span>`:''}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;">
+        ${ass.map(a=>{
+          const m=DB.mapel.find(x=>x.id===a.mapelId);
+          const done=Object.values(DB.jadwal[k.id]||{}).reduce((s,arr)=>s+arr.filter(b=>b.mapelId===a.mapelId).reduce((ss,b)=>ss+(b.span||1),0),0);
+          return m?`<div style="padding:6px 10px;background:${m.color}22;border:1px solid ${m.color}44;border-radius:7px;font-size:10px;">
+            <div style="font-weight:800;color:${m.color};">${m.kode}</div>
+            <div style="color:var(--text2);">${done}/${a.jamPerMinggu}JP • ${a.spanJam}JP/ptm</div>
+          </div>`:'';
+        }).join('')}
+        ${!ass.length?'<span style="font-size:11px;color:var(--text3);">Belum ada mapel di-assign</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ================ IMPORT/EXPORT ================
+function exportAll(){
+  const data={app:'Benyamin Batau Scheduling App',version:'4.0',exportedAt:new Date().toISOString(),...DB};
+  const bl=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(bl);
+  a.download=`SMKN1_Sumarorong_${DB.info.sem}${DB.info.tp.replace('/','_')}.json`;a.click();
+  toast('Export berhasil!');
+}
+function readFile(){
+  const f=document.getElementById('importFile').files[0];if(!f)return;
+  const r=new FileReader();r.onload=e=>document.getElementById('importRaw').value=e.target.result;r.readAsText(f);
+}
+function doImport(){
+  try{
+    const data=JSON.parse(v('importRaw'));
+    ['info','jurusan','kelas','mapel','guru','jam','assign','jadwal'].forEach(f=>{if(data[f]!==undefined)DB[f]=data[f];});
+    save();cm('mImport');rdash();toast('Import berhasil!');
+  }catch(e){toast('Import gagal!',e.message,'err');}
+}
+
+// ================ UTILS ================
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+
+// ================ INIT ================
+buildSetupPanels();
+buildWizard();
+rdash();
+</script>
+</body>
+</html>
